@@ -1,0 +1,70 @@
+.create {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.4);
+	z-index: 200;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.create__container {
+	width: 70%;
+	height: 90vh;
+	background-color: white;
+	box-shadow: 0 0 0.2rem 0.1rem rgba(0, 0, 0, 0.4);
+	overflow: hidden;
+	position: relative;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.create__title {
+	width: 100%;
+	height: 4rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-bottom: 0.1rem solid rgba(0, 0, 0, 0.4);
+	font-size: 2rem;
+	font-weight: 600;
+}
+.create__quiz {
+	width: 40%;
+	height: calc(100% - 4rem);
+	padding-bottom: 1rem;
+	border-right: 0.1rem solid rgba(0, 0, 0, 0.4);
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+
+.create__question {
+	width: 60%;
+	height: calc(100% - 4rem);
+	padding-bottom: 1rem;
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+.create__quiz::-webkit-scrollbar,
+.create__question::-webkit-scrollbar {
+	display: none;
+}
+.cancel {
+	position: absolute;
+	right: 1rem;
+	top: 1rem;
+	& > div {
+		width: 2rem;
+		height: 2rem;
+		border: 0.1rem solid rgba(0, 0, 0, 0.4);
+		border-radius: 50%;
+		font-size: 2rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding-bottom: 0.5rem;
+		cursor: pointer;
+	}
+}

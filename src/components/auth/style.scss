@@ -1,0 +1,48 @@
+.auth {
+	width: 35%;
+	background-color: rgb(76, 210, 231);
+	min-height: 10rem;
+	border-radius: 1rem;
+	padding: 2rem;
+	opacity: 0.8;
+}
+
+.title {
+	font-size: 2rem;
+	text-transform: uppercase;
+	margin-bottom: 4rem;
+}
+.form__input {
+	width: 100%;
+	margin-top: 2rem;
+	position: relative;
+	& > input {
+		width: 80%;
+		height: 5rem;
+		border: none;
+		outline: none;
+		padding: 0 1.5rem;
+		padding-right: 4rem;
+		border-radius: 3rem;
+		font-size: 1.6rem;
+	}
+	&-eyes {
+		position: absolute;
+		right: 12%;
+		top: 50%;
+		transform: translateY(-50%);
+		font-size: 2rem;
+		cursor: pointer;
+	}
+}
+.button {
+	margin-top: 4rem;
+}
+.warning {
+	color: rgb(205, 71, 71);
+	margin-left: 12%;
+	font-size: 1.5rem;
+	font-weight: 500;
+	margin-bottom: -1rem;
+	text-transform: capitalize;
+}
