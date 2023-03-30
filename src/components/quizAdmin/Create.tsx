@@ -31,14 +31,14 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 	const [image, setImage] = useState<string>();
 	const [name, setName] = useState<string>("");
 	const nameRef = useRef<HTMLTextAreaElement>(null);
-	const fileRef = useRef<ProgressEvent<FileReader>>();
+	const fileRef = useRef<File>();
 	const [quizAll, setQuizAll] = useState<quiz>();
 	//endquiz
 
 	//question
 	const [quesionImg, setQuesitionImg] = useState<string>();
 	const [correctAnswer, setCorrectAnswer] = useState<number>(0);
-	const fileQuestionRef = useRef<ProgressEvent<FileReader>>();
+	const fileQuestionRef = useRef<File>();
 	const nameQuestionRef = useRef<HTMLTextAreaElement>(null);
 	const answerARef = useRef<HTMLTextAreaElement>(null);
 	const answerBRef = useRef<HTMLTextAreaElement>(null);
@@ -54,10 +54,10 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 			const reader = new FileReader();
 			reader.onload = (event) => {
 				if (type === "quiz") {
-					fileRef.current = event;
+					fileRef.current = file;
 					setImage(event.target?.result?.toString());
 				} else {
-					fileQuestionRef.current = event;
+					fileQuestionRef.current = file;
 					setQuesitionImg(event.target?.result?.toString());
 				}
 			};
@@ -76,10 +76,10 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 
 		reader.onload = (event) => {
 			if (type === "quiz") {
-				fileRef.current = event;
+				fileRef.current = file;
 				setImage(event.target?.result?.toString());
 			} else {
-				fileQuestionRef.current = event;
+				fileQuestionRef.current = file;
 				setQuesitionImg(event.target?.result?.toString());
 			}
 		};
@@ -211,7 +211,7 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 		try {
 			const formData = new FormData();
 			formData.append("file", item.image as File);
-			formData.append("upload_preset", "quiz");
+			formData.append("upload_preset", "pet7chaa");
 			imageUrlArray.push(
 				axios.post(
 					"https://api.cloudinary.com/v1_1/dgn9bcr5s/image/upload",
@@ -220,7 +220,7 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 			);
 			item?.questions?.forEach((item) => {
 				formData.append("file", item.image as File);
-				formData.append("upload_preset", "quiz");
+				formData.append("upload_preset", "pet7chaa");
 				imageUrlArray.push(
 					axios.post(
 						"https://api.cloudinary.com/v1_1/dgn9bcr5s/image/upload",
@@ -230,6 +230,7 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 			});
 			const urlData = await Promise.allSettled(imageUrlArray);
 			console.log(urlData);
+
 			const url = "/v1/quiz/create";
 			// const data = await axios.post(
 			// 	url,
@@ -240,8 +241,6 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 			// 		headers: {
 			// 			token: `Bearer ${auth.user?.token}`,
 			// 		},
-			// 		maxContentLength: 100000000,
-			// 		maxBodyLength: 100000000,
 			// 	}
 			// );
 		} catch (error) {
