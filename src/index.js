@@ -9,6 +9,7 @@ dotenv.config();
 
 const config = require("./config/database.config");
 config.mongoDB();
+config.redisDB().connect();
 
 router(app);
 

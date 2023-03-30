@@ -24,6 +24,18 @@ const userSchema = new schema(
 			type: String,
 			required: true,
 		},
+		histories: [
+			{
+				type: {
+					type: mongoose.Types.ObjectId,
+					ref: "quizzes",
+				},
+				point: {
+					type: Number,
+					default: 0,
+				},
+			},
+		],
 	},
 	{
 		timestamps: true,

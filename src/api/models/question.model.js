@@ -11,8 +11,8 @@ const questionModel = new schema(
 			default: [],
 		},
 		correctAnswer: {
-			type: [],
-			default: [],
+			type: String,
+			default: "",
 		},
 		image: {
 			type: String,

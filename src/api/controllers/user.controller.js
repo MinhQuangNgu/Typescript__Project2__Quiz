@@ -3,26 +3,31 @@ const userModel = require("../models/user.model");
 const config = require("../../config/jwt.config");
 module.exports = {
 	login: async (req, res) => {
-		const { email, password } = req.body;
-		const user = await userModel.findOne({ email });
-		if (!user) {
-			return res
-				.status(400)
-				.json({ msg: "Tài khoản hoặc mật khẩu không chính xác" });
+		try {
+			let { email, password } = req.body;
+			const user = await userModel.findOne({ email });
+			if (!user) {
+				return res
+					.status(400)
+					.json({ msg: "Tài khoản hoặc mật khẩu không chính xác" });
+			}
+
+			const validPassword = await bcrypt.compare(password, user.password);
+			if (!validPassword) {
+				return res
+					.status(400)
+					.json({ msg: "Tài khoản hoặc mật khẩu không chính xác" });
+			}
+			const token = config.getAccessToken(user);
+			return res.status(200).json({
+				token: token,
+				name: user.name,
+				image: user.image,
+				msg: "Đăng nhập thành công.",
+			});
+		} catch (err) {
+			return res.status(400).json({ msg: "Password is string" });
 		}
-		const validPassword = await bcrypt.compare(password, user.password);
-		if (!validPassword) {
-			return res
-				.status(400)
-				.json({ msg: "Tài khoản hoặc mật khẩu không chính xác" });
-		}
-		const token = config.getAccessToken(user);
-		return res.status(200).json({
-			token: token,
-			name: user.name,
-			image: user.image,
-			msg: "Đăng nhập thành công.",
-		});
 	},
 	register: async (req, res) => {
 		const { email, password, name } = req.body;
