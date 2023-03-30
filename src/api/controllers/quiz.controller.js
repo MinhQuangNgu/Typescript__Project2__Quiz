@@ -3,22 +3,23 @@ const questionModel = require("../models/question.model");
 
 module.exports = {
 	createNewQuiz: async (req, res) => {
-		const { name, questions } = req.body;
+		const { quiz } = req.body;
 		const ques = [];
-		for (const item of questions) {
-			const quesion = new questionModel({
-				answers: item.answers,
-				name: item.name,
-				correctAnswer: item.correctAnswer,
-			});
-			ques.push(quesion._id);
-			await quesion.save();
-		}
-		const quiz = new quizModel({
-			questions: ques,
-			name: name,
-		});
-		await quiz.save();
+		console.log(quiz);
+		// for (const item of questions) {
+		// 	const quesion = new questionModel({
+		// 		answers: item.answers,
+		// 		name: item.name,
+		// 		correctAnswer: item.correctAnswer,
+		// 	});
+		// 	ques.push(quesion._id);
+		// 	await quesion.save();
+		// }
+		// const quiz = new quizModel({
+		// 	questions: ques,
+		// 	name: name,
+		// });
+		// await quiz.save();
 		return res.status(200).json({ msg: "Tạo mới quiz thành công." });
 	},
 	getQuiz: async (req, res) => {

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const redis = require("redis");
+const cloudinary = require("cloudinary").v2;
 module.exports = {
 	mongoDB: () => {
 		mongoose
@@ -24,5 +25,12 @@ module.exports = {
 			console.log(`Redis error ${err}`);
 		});
 		return client;
+	},
+	cloudinaryConfig: () => {
+		cloudinary.config({
+			cloud_name: process.env.CLOUDINARY_NAME,
+			api_key: process.env.CLOUDINARY_API_KEY,
+			api_secret: process.env.CLOUDINARY_API_SERCET,
+		});
 	},
 };
