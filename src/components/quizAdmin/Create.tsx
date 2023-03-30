@@ -4,6 +4,10 @@ import { Droppable } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
 import Question from "../admin/Question";
 import { UseContext } from "../../App";
+import { ErrorLogin } from "../../model";
+import axios, { AxiosError } from "axios";
+import { postApi } from "../../api/Api";
+import { useAppSelector } from "../../store/store";
 interface props {
 	create: boolean;
 	setCreate: React.Dispatch<React.SetStateAction<boolean>>;
@@ -20,6 +24,7 @@ interface quiz {
 	name: string;
 	image: ProgressEvent<FileReader> | unknown;
 	questions: question[];
+	[key: string]: any;
 }
 const Create: React.FC<props> = ({ create, setCreate }) => {
 	//quiz
@@ -159,6 +164,8 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 
 	const { result } = useContext(UseContext);
 
+	const auth = useAppSelector((state) => state.auth);
+
 	useEffect(() => {
 		if (result) {
 			if (result?.destination) {
@@ -181,12 +188,66 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 		}
 	}, [result]);
 
-	const handleCreateNewQuiz = (): void => {
-		if (!quizAll?.name || !quizAll?.image || quizAll?.questions?.length === 0) {
+	const handleCreateNewQuiz = async (): Promise<void> => {
+		const item: quiz = {
+			name: nameRef.current?.value || "",
+			image: fileRef.current,
+			questions: quizAll?.questions || [],
+		};
+		if (!item) {
 			toast.error("Vui lòng điền thông tin hoặc ít nhất 1 câu hỏi", {
 				autoClose: 2000,
 			});
-			return;
+		} else {
+			item.name = nameRef.current?.value || "";
+		}
+		// if (!item?.name || !item?.image || item?.questions?.length === 0) {
+		// 	toast.error("Vui lòng điền thông tin hoặc ít nhất 1 câu hỏi", {
+		// 		autoClose: 2000,
+		// 	});
+		// 	return;
+		// }
+		let imageUrlArray = [];
+		try {
+			const formData = new FormData();
+			formData.append("file", item.image as File);
+			formData.append("upload_preset", "quiz");
+			imageUrlArray.push(
+				axios.post(
+					"https://api.cloudinary.com/v1_1/dgn9bcr5s/image/upload",
+					formData
+				)
+			);
+			item?.questions?.forEach((item) => {
+				formData.append("file", item.image as File);
+				formData.append("upload_preset", "quiz");
+				imageUrlArray.push(
+					axios.post(
+						"https://api.cloudinary.com/v1_1/dgn9bcr5s/image/upload",
+						formData
+					)
+				);
+			});
+			const urlData = await Promise.allSettled(imageUrlArray);
+			console.log(urlData);
+			const url = "/v1/quiz/create";
+			// const data = await axios.post(
+			// 	url,
+			// 	{
+			// 		quiz: item,
+			// 	},
+			// 	{
+			// 		headers: {
+			// 			token: `Bearer ${auth.user?.token}`,
+			// 		},
+			// 		maxContentLength: 100000000,
+			// 		maxBodyLength: 100000000,
+			// 	}
+			// );
+		} catch (error) {
+			console.log(error);
+			const err = error as AxiosError<ErrorLogin>;
+			toast.error(err?.response?.data?.msg);
 		}
 	};
 
