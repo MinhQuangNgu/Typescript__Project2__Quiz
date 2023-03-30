@@ -38,6 +38,7 @@
 	border-right: 0.1rem solid rgba(0, 0, 0, 0.4);
 	overflow-x: hidden;
 	overflow-y: scroll;
+	padding-top: 1rem;
 }
 
 .create__question {
@@ -67,4 +68,94 @@
 		padding-bottom: 0.5rem;
 		cursor: pointer;
 	}
+}
+.quizCard__input {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	& > div {
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+		display: flex;
+	}
+}
+.quizCard__input__question {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 40%;
+	bottom: 0;
+	& > div {
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+		display: flex;
+	}
+}
+.quizCard__label {
+	width: 100%;
+	height: 100%;
+}
+.input__text {
+	margin-top: 2rem;
+	& > textarea {
+		width: 100%;
+		min-height: 2rem;
+		outline: none;
+		resize: vertical;
+		padding: 0.5rem;
+		font-size: 1.7rem;
+	}
+}
+.input__create__button {
+	margin-top: 2rem;
+	display: flex;
+	justify-content: center;
+	& > button:first-child {
+		margin-right: 1rem;
+	}
+}
+.create__question {
+	padding: 1rem;
+}
+.question__card {
+	position: relative;
+}
+.question__card__input {
+	position: relative;
+	width: 100%;
+	min-height: 18rem;
+	border: 0.1rem solid rgba(0, 0, 0, 0.2);
+	margin-bottom: 1.5rem;
+	display: flex;
+	position: relative;
+	overflow: hidden;
+}
+.question__input__name {
+	width: 100%;
+	& > textarea {
+		width: 100%;
+		min-height: 5rem;
+		outline: none;
+		padding: 0.5rem;
+		font-size: 1.5rem;
+		resize: vertical;
+	}
+}
+.text__area__input {
+	width: 100%;
+	& > textarea {
+		width: 100%;
+		min-height: 5rem;
+		padding: 0.5rem;
+		font-size: 1.2rem;
+		resize: vertical;
+		outline: none;
+	}
+}
+.no__transform:hover {
+	transform: scale(1);
 }

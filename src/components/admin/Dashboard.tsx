@@ -11,7 +11,7 @@ const Dashboard: React.FC = () => {
 		<div style={{ position: "relative" }} className="container d-flex center-h">
 			<div className="dashboard">
 				<Header />
-				<Droppable droppableId="quiz">
+				<Droppable isDropDisabled={create ? true : false} droppableId="quiz">
 					{(provided) => (
 						<div
 							{...provided.droppableProps}
@@ -24,7 +24,10 @@ const Dashboard: React.FC = () => {
 						</div>
 					)}
 				</Droppable>
-				<Droppable droppableId="question">
+				<Droppable
+					isDropDisabled={create ? true : false}
+					droppableId="question"
+				>
 					{(provided) => (
 						<div
 							{...provided.droppableProps}
