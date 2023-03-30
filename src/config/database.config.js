@@ -15,7 +15,7 @@ module.exports = {
 	},
 	redisDB: () => {
 		const client = redis.createClient({
-			url: "redis://default:RcScKV39SVEBbNaKfinFwEMKp9Abwi94@redis-11661.c1.asia-northeast1-1.gce.cloud.redislabs.com:11661",
+			url: process.env.REDIS_URL,
 		});
 		client.on("connect", () => {
 			console.log("Connected redis");
