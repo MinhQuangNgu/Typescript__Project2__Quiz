@@ -3,10 +3,19 @@ import { Draggable } from "react-beautiful-dnd";
 
 interface props {
 	index: number;
+	question: {
+		answers: string[];
+		correctAnswer: string;
+		image: ProgressEvent<FileReader> | unknown;
+		name: string;
+		url: string;
+	};
+	[key: string]: any;
+	type: string;
 }
-const Question: React.FC<props> = ({ index }) => {
+const Question: React.FC<props> = ({ index, question, type }) => {
 	return (
-		<Draggable index={index} draggableId={index.toString() + "question"}>
+		<Draggable index={index} draggableId={index.toString() + type}>
 			{(provided) => (
 				<div
 					ref={provided.innerRef}
@@ -15,40 +24,33 @@ const Question: React.FC<props> = ({ index }) => {
 					className="question__card"
 				>
 					<div className="question__card__img">
-						<img
-							src="https://antimatter.vn/wp-content/uploads/2022/05/background-dep-hoang-hon.jpg"
-							alt="anh"
-						/>
+						<img src={question?.url} alt="anh" />
 					</div>
 					<div className="question__card_information">
 						<div className="question__card_name">
-							<i>
-								Hello anh quang Hello anh quang Hello anh quang Hello anh quang
-							</i>
+							<i>{question?.name}</i>
 						</div>
 						<div className="question__card_answer">
-							<div className="question__quiz__answer__container">
-								<div className="question__quiz__answer__items">
-									Quang Ngu Quang Ngu Quang Ngu Quang NguNguasdasdassa
-								</div>
-							</div>
-							<div className="question__quiz__answer__container">
+							{question?.answers?.map((item, index) => (
 								<div
-									style={{
-										backgroundImage: "linear-gradient(0, green, green)",
-										color: "white",
-									}}
-									className="question__quiz__answer__items"
+									key={item + index}
+									className="question__quiz__answer__container"
 								>
-									Quang Ngu
+									<div
+										style={
+											item === question?.correctAnswer
+												? {
+														backgroundImage: "linear-gradient(0, green, green)",
+														color: "white",
+												  }
+												: {}
+										}
+										className="question__quiz__answer__items"
+									>
+										{item}
+									</div>
 								</div>
-							</div>
-							<div className="question__quiz__answer__container">
-								<div className="question__quiz__answer__items">Quang Ngu</div>
-							</div>
-							<div className="question__quiz__answer__container">
-								<div className="question__quiz__answer__items">Quang Ngu</div>
-							</div>
+							))}
 						</div>
 					</div>
 					<div className="question__edit">

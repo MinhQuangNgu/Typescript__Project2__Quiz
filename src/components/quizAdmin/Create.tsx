@@ -1,9 +1,24 @@
 import React, { useRef, useState } from "react";
 import "./style.scss";
 import { Draggable, Droppable } from "react-beautiful-dnd";
+import { toast } from "react-toastify";
+import Question from "../admin/Question";
 interface props {
 	create: boolean;
 	setCreate: React.Dispatch<React.SetStateAction<boolean>>;
+}
+interface question {
+	answers: string[];
+	correctAnswer: string;
+	image: ProgressEvent<FileReader> | unknown;
+	name: string;
+	url: string;
+	[key: string]: any;
+}
+interface quiz {
+	name: string;
+	image: ProgressEvent<FileReader> | unknown;
+	questions: question[];
 }
 const Create: React.FC<props> = ({ create, setCreate }) => {
 	//quiz
@@ -11,10 +26,12 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 	const [name, setName] = useState<string>("");
 	const nameRef = useRef<HTMLTextAreaElement>(null);
 	const fileRef = useRef<ProgressEvent<FileReader>>();
+	const [quizAll, setQuizAll] = useState<quiz>();
 	//endquiz
 
 	//question
 	const [quesionImg, setQuesitionImg] = useState<string>();
+	const [correctAnswer, setCorrectAnswer] = useState<number>(0);
 	const fileQuestionRef = useRef<ProgressEvent<FileReader>>();
 	const nameQuestionRef = useRef<HTMLTextAreaElement>(null);
 	const answerARef = useRef<HTMLTextAreaElement>(null);
@@ -52,7 +69,6 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 		const reader = new FileReader();
 
 		reader.onload = (event) => {
-			console.log(type);
 			if (type === "quiz") {
 				fileRef.current = event;
 				setImage(event.target?.result?.toString());
@@ -78,7 +94,68 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 		setName(nameRef.current?.value || "");
 	};
 
-	const createNewQuestion = (): void => {};
+	const createNewQuestion = (): void => {
+		const answer = [
+			answerARef.current?.value || "",
+			answerBRef.current?.value || "",
+			answerCRef.current?.value || "",
+			answerDRef.current?.value || "",
+		];
+		const quiz: question = {
+			answers: answer,
+			correctAnswer: answer[correctAnswer],
+			image: fileQuestionRef.current,
+			name: nameQuestionRef.current?.value || "",
+			url: quesionImg || "",
+		};
+
+		const excluedFields = ["answers", "correctAnswer", "image", "name", "url"];
+		let check: boolean = false;
+		excluedFields.forEach((item) => {
+			if (!quiz[item] || quiz[item]?.length === 0) {
+				check = true;
+			}
+		});
+		quiz.answers?.forEach((item) => {
+			if (!item) {
+				check = true;
+			}
+		});
+		if (check) {
+			toast.error("Vui lòng nhập hết thông tin", {
+				autoClose: 2000,
+			});
+			return;
+		}
+
+		let question = quizAll?.questions || [];
+		question?.push(quiz);
+
+		let quizDetail: quiz = {
+			name: nameRef.current?.value || "",
+			image: fileRef.current,
+			questions: question,
+		};
+		setQuizAll(quizDetail);
+		if (answerARef.current) {
+			answerARef.current.value = "";
+		}
+		if (answerBRef.current) {
+			answerBRef.current.value = "";
+		}
+		if (answerCRef.current) {
+			answerCRef.current.value = "";
+		}
+		if (answerDRef.current) {
+			answerDRef.current.value = "";
+		}
+		if (nameQuestionRef.current) {
+			nameQuestionRef.current.value = "";
+		}
+		fileQuestionRef.current = undefined;
+		setQuesitionImg("");
+	};
+
 	return (
 		<div className="create">
 			<div className="create__container">
@@ -164,6 +241,61 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 									<textarea ref={nameQuestionRef} placeholder="Tên câu hỏi" />
 								</div>
 							</div>
+							<div className="d-flex center-h">
+								<div className="radio__input">
+									<label htmlFor="A">A</label>
+									<input
+										defaultChecked
+										id="A"
+										type="radio"
+										name="correctAnswer"
+										onChange={(e) => {
+											if (e.target.checked) {
+												setCorrectAnswer(0);
+											}
+										}}
+									/>
+								</div>
+								<div className="radio__input">
+									<label htmlFor="B">B</label>
+									<input
+										onChange={(e) => {
+											if (e.target.checked) {
+												setCorrectAnswer(1);
+											}
+										}}
+										id="B"
+										type="radio"
+										name="correctAnswer"
+									/>
+								</div>
+								<div className="radio__input">
+									<label htmlFor="C">C</label>
+									<input
+										onChange={(e) => {
+											if (e.target.checked) {
+												setCorrectAnswer(2);
+											}
+										}}
+										id="C"
+										type="radio"
+										name="correctAnswer"
+									/>
+								</div>
+								<div className="radio__input">
+									<label htmlFor="D">D</label>
+									<input
+										onChange={(e) => {
+											if (e.target.checked) {
+												setCorrectAnswer(3);
+											}
+										}}
+										id="D"
+										type="radio"
+										name="correctAnswer"
+									/>
+								</div>
+							</div>
 							<div className="question__card_answer">
 								<div className="question__quiz__answer__container">
 									<div className="question__quiz__answer__items no__transform">
@@ -173,13 +305,7 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 									</div>
 								</div>
 								<div className="question__quiz__answer__container">
-									<div
-										style={{
-											backgroundImage: "linear-gradient(0, green, green)",
-											color: "white",
-										}}
-										className="question__quiz__answer__items no__transform"
-									>
+									<div className="question__quiz__answer__items no__transform">
 										<div className="text__area__input">
 											<textarea ref={answerBRef} placeholder="Đáp án B" />
 										</div>
@@ -212,6 +338,25 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 							</div>
 						</div>
 					</div>
+					<Droppable droppableId="questionAdmin">
+						{(provided) => (
+							<div
+								ref={provided.innerRef}
+								{...provided.droppableProps}
+								className="question__card__detail"
+							>
+								{quizAll?.questions?.map((item, index) => (
+									<Question
+										question={item}
+										key={item?.name}
+										index={index}
+										type="createQuestion"
+									/>
+								))}
+								{provided.placeholder}
+							</div>
+						)}
+					</Droppable>
 				</div>
 				<div className="cancel">
 					<div

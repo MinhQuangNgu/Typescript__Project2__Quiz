@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Header from "../header/Header";
 import "./style.scss";
 import { Droppable } from "react-beautiful-dnd";
 import QuizCardAdmin from "./QuizCardAdmin";
 import Question from "./Question";
 import Create from "../quizAdmin/Create";
+import { UseContext } from "../../App";
 const Dashboard: React.FC = () => {
 	const [create, setCreate] = useState<boolean>(false);
+
+	const { result } = useContext(UseContext);
 	return (
 		<div style={{ position: "relative" }} className="container d-flex center-h">
 			<div className="dashboard">
@@ -34,8 +37,6 @@ const Dashboard: React.FC = () => {
 							ref={provided.innerRef}
 							className="question"
 						>
-							<Question index={2} />
-							<Question index={3} />
 							{provided.placeholder}
 						</div>
 					)}
