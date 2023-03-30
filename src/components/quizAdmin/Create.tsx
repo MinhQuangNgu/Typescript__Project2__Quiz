@@ -1,8 +1,9 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useContext, useEffect } from "react";
 import "./style.scss";
-import { Draggable, Droppable } from "react-beautiful-dnd";
+import { Droppable } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
 import Question from "../admin/Question";
+import { UseContext } from "../../App";
 interface props {
 	create: boolean;
 	setCreate: React.Dispatch<React.SetStateAction<boolean>>;
@@ -156,6 +157,39 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 		setQuesitionImg("");
 	};
 
+	const { result } = useContext(UseContext);
+
+	useEffect(() => {
+		if (result) {
+			if (result?.destination) {
+				if (
+					result?.destination?.droppableId === "questionAdmin" &&
+					result?.source?.droppableId === "questionAdmin"
+				) {
+					const item: question[] = quizAll?.questions || [];
+					const target = result?.destination?.index || 0;
+					const inde = result?.source?.index || 0;
+					const firstItem = item.splice(inde, 1);
+					item.splice(target, 0, firstItem[0]);
+					setQuizAll({
+						name: nameRef.current?.value || "",
+						image: fileRef.current,
+						questions: item,
+					});
+				}
+			}
+		}
+	}, [result]);
+
+	const handleCreateNewQuiz = (): void => {
+		if (!quizAll?.name || !quizAll?.image || quizAll?.questions?.length === 0) {
+			toast.error("Vui lòng điền thông tin hoặc ít nhất 1 câu hỏi", {
+				autoClose: 2000,
+			});
+			return;
+		}
+	};
+
 	return (
 		<div className="create">
 			<div className="create__container">
@@ -202,7 +236,9 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 							<textarea ref={nameRef} placeholder="Enter Name of this quiz" />
 						</div>
 						<div className="input__create__button">
-							<button className="btn btn-default">Tạo mới</button>
+							<button onClick={handleCreateNewQuiz} className="btn btn-default">
+								Tạo mới
+							</button>
 							<button onClick={handleTest} className="btn btn-default">
 								Test thử name
 							</button>

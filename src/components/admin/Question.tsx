@@ -15,7 +15,10 @@ interface props {
 }
 const Question: React.FC<props> = ({ index, question, type }) => {
 	return (
-		<Draggable index={index} draggableId={index.toString() + type}>
+		<Draggable
+			index={index}
+			draggableId={question?.name + type + question?.answers[0]}
+		>
 			{(provided) => (
 				<div
 					ref={provided.innerRef}

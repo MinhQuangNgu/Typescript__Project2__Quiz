@@ -10,7 +10,16 @@ import { DragDropContext, DropResult } from "react-beautiful-dnd";
 interface cache {
 	cache: object;
 	role: string;
-	result: object;
+	result?: {
+		destination?: {
+			droppableId?: string;
+			index?: number;
+		};
+		source?: {
+			droppableId?: string;
+			index?: number;
+		};
+	};
 }
 export const UseContext = createContext<cache>({
 	cache: {},
@@ -20,7 +29,7 @@ export const UseContext = createContext<cache>({
 function App() {
 	const cacheRef = useRef<object>({});
 	const [role, setRole] = useState<string>("");
-	const [result, setResult] = useState<object>({});
+	const [result, setResult] = useState({});
 	const auth = useAppSelector((state) => state.auth);
 	useEffect((): void => {
 		if (auth.user?.token) {
