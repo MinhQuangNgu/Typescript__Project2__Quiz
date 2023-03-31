@@ -154,35 +154,34 @@ const Dashboard: React.FC = () => {
 						</div>
 					)}
 				</Droppable>
-				<Droppable
-					isDropDisabled={updateQuestion ? true : false}
-					droppableId="question"
-				>
-					{(provided) => (
-						<div
-							{...provided.droppableProps}
-							ref={provided.innerRef}
-							className="question"
-						>
-							{quizs &&
-								quizs[number]?.questions?.map((item, index) => (
-									<Question
-										type="admin"
-										key={item?._id}
-										question={{
-											...item,
-											url: item?.image,
-										}}
-										quizId={quizs[number]?._id}
-										index={index}
-										setUpdateQuesion={setUpdateQuesion}
-										updateQuestion={updateQuestion}
-									/>
-								))}
-							{provided.placeholder}
-						</div>
-					)}
-				</Droppable>
+				<div className="question">
+					<CreateQuestion />
+					<Droppable
+						isDropDisabled={updateQuestion ? true : false}
+						droppableId="question"
+					>
+						{(provided) => (
+							<div {...provided.droppableProps} ref={provided.innerRef}>
+								{quizs &&
+									quizs[number]?.questions?.map((item, index) => (
+										<Question
+											type="admin"
+											key={item?._id}
+											question={{
+												...item,
+												url: item?.image,
+											}}
+											quizId={quizs[number]?._id}
+											index={index}
+											setUpdateQuesion={setUpdateQuesion}
+											updateQuestion={updateQuestion}
+										/>
+									))}
+								{provided.placeholder}
+							</div>
+						)}
+					</Droppable>
+				</div>
 			</div>
 			<div className="dashboard__create">
 				<button

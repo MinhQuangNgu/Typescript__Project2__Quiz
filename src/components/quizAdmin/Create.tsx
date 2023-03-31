@@ -331,7 +331,10 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 				</div>
 				<div className="create__question">
 					<div className="question__card__input">
-						<div className="quizCard__input__question">
+						<div
+							style={{ borderRight: "0.1rem solid rgba(0,0,0,0.2)" }}
+							className="quizCard__input__question"
+						>
 							<div>
 								<label
 									onDrop={(e) => handleDrop(e, "question")}
@@ -349,10 +352,7 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 								/>
 							</div>
 						</div>
-						<div
-							style={{ borderRight: "0.1rem solid rgba(0,0,0,0.2)" }}
-							className="question__card__img"
-						>
+						<div className="question__card__img">
 							<img src={quesionImg} alt="anh" />
 						</div>
 						<div className="question__card_information">
