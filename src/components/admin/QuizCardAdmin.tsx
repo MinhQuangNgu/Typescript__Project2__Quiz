@@ -5,16 +5,22 @@ import { quiz } from "../../model";
 interface props {
 	index: number;
 	item: quiz;
+	number: number;
+	setNumber: React.Dispatch<React.SetStateAction<number>>;
 }
-const QuizCardAdmin: React.FC<props> = ({ index, item }) => {
+const QuizCardAdmin: React.FC<props> = ({ index, item, number, setNumber }) => {
 	const handleChoose = () => {
-		console.log("Here");
+		setNumber(index);
+	};
+	const handleUpdate = () => {
+		console.log("Updateing");
 	};
 	return (
 		<Draggable index={index} draggableId={index.toString() + item?._id}>
 			{(provided) => (
 				<div
-					onDoubleClick={handleChoose}
+					onClick={handleChoose}
+					onDoubleClick={handleUpdate}
 					style={{ width: "100%" }}
 					{...provided.dragHandleProps}
 					{...provided.draggableProps}

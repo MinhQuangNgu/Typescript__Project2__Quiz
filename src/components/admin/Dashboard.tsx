@@ -6,9 +6,10 @@ import QuizCardAdmin from "./QuizCardAdmin";
 import Question from "./Question";
 import Create from "../quizAdmin/Create";
 import { UseContext } from "../../App";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
-import { quiz } from "../../model";
+import { ErrorLogin, quiz } from "../../model";
+import { useAppSelector } from "../../store/store";
 
 const Dashboard: React.FC = () => {
 	const [create, setCreate] = useState<boolean>(false);
@@ -17,6 +18,8 @@ const Dashboard: React.FC = () => {
 	const [update, setUpdate] = useState<boolean>(false);
 
 	const countRef = useRef<number>(0);
+
+	const auth = useAppSelector((state) => state.auth);
 
 	const { result } = useContext(UseContext);
 	useEffect(() => {
@@ -55,7 +58,38 @@ const Dashboard: React.FC = () => {
 
 	useEffect(() => {
 		countRef.current = 0;
+		setUpdate(!update);
 	}, [number]);
+
+	const handleUpdateQuestion = async (): Promise<void> => {
+		if (!quizs) {
+			return;
+		}
+		try {
+			let questionArray: string[] = [];
+			quizs[number]?.questions.forEach((item) => {
+				questionArray.push(item?._id);
+			});
+			const url = `/v1/quiz/update_question/${quizs[number]?._id}`;
+			const data = await axios.post(
+				url,
+				{
+					questions: questionArray,
+				},
+				{
+					headers: {
+						token: `Bearer ${auth.user?.token}`,
+					},
+				}
+			);
+			toast.success(data?.data?.msg);
+			countRef.current = 0;
+			setUpdate(!update);
+		} catch (error) {
+			const err = error as AxiosError<ErrorLogin>;
+			toast.error(err?.response?.data?.msg);
+		}
+	};
 
 	return (
 		<div style={{ position: "relative" }} className="container d-flex center-h">
@@ -69,7 +103,13 @@ const Dashboard: React.FC = () => {
 							className="dashboard__navbar"
 						>
 							{quizs?.map((item, index) => (
-								<QuizCardAdmin item={item} index={index} key={item?._id} />
+								<QuizCardAdmin
+									number={number}
+									setNumber={setNumber}
+									item={item}
+									index={index}
+									key={item?._id}
+								/>
 							))}
 							{provided.placeholder}
 						</div>
@@ -111,7 +151,10 @@ const Dashboard: React.FC = () => {
 					Tạo mới
 				</button>
 				{countRef.current > 0 && (
-					<button style={{ backgroundColor: "#FF8A08", marginLeft: "1rem" }}>
+					<button
+						onClick={handleUpdateQuestion}
+						style={{ backgroundColor: "#FF8A08", marginLeft: "1rem" }}
+					>
 						Save
 					</button>
 				)}
