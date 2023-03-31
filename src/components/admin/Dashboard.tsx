@@ -12,6 +12,8 @@ import { ErrorLogin, question, quiz } from "../../model";
 import { useAppSelector } from "../../store/store";
 import QuestionUpdate from "../update/QuestionUpdate";
 import QuizUpdate from "../update/QuizUpdate";
+import { useLocation, useNavigate } from "react-router-dom";
+import CreateQuestion from "../quizAdmin/CreateQuestion";
 
 const Dashboard: React.FC = () => {
 	const [create, setCreate] = useState<boolean>(false);
@@ -25,9 +27,24 @@ const Dashboard: React.FC = () => {
 	const [quizUpdate, setQuizUpdate] = useState<{
 		name: string;
 		image: string;
+		_id: string;
 	} | null>(null);
 	//
+	const navigate = useNavigate();
+	//
 	const auth = useAppSelector((state) => state.auth);
+
+	const { search } = useLocation();
+
+	useEffect(() => {
+		if (quizs) {
+			const id = new URLSearchParams(search).get("id") || 0;
+			const index = quizs.findIndex(
+				(item) => item?._id?.toString() === id?.toString()
+			);
+			setNumber(index);
+		}
+	}, [search, update]);
 
 	const { result } = useContext(UseContext);
 	useEffect(() => {
@@ -36,6 +53,7 @@ const Dashboard: React.FC = () => {
 			.get("/v1/quiz")
 			.then((res) => {
 				setQuizs(res?.data?.quiz);
+				navigate(`?id=${res?.data?.quiz[0]?._id}`);
 			})
 			.catch((err) => {
 				toast.error(err?.response?.data?.msg);
@@ -126,8 +144,6 @@ const Dashboard: React.FC = () => {
 						>
 							{quizs?.map((item, index) => (
 								<QuizCardAdmin
-									number={number}
-									setNumber={setNumber}
 									item={item}
 									index={index}
 									key={item?._id}

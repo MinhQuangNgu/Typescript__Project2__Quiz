@@ -1,15 +1,21 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./style.scss";
+import axios, { AxiosError } from "axios";
+import { useAppSelector } from "../../store/store";
+import { ErrorLogin } from "../../model";
+import { toast } from "react-toastify";
 
 interface props {
 	quizUpdate: {
 		name: string;
 		image: string;
+		_id: string;
 	};
 	setQuizUpdate: React.Dispatch<
 		React.SetStateAction<{
 			name: string;
 			image: string;
+			_id: string;
 		} | null>
 	>;
 }
@@ -19,7 +25,14 @@ const QuizUpdate: React.FC<props> = ({ quizUpdate, setQuizUpdate }) => {
 	const [quiz, setQuiz] = useState<{
 		name: string;
 		image: string;
+		_id: string;
 	}>();
+
+	//
+	const auth = useAppSelector((state) => state.auth);
+	const nameRef = useRef<HTMLTextAreaElement>(null);
+
+	//
 
 	useEffect(() => {
 		if (quizUpdate) {
@@ -68,13 +81,67 @@ const QuizUpdate: React.FC<props> = ({ quizUpdate, setQuizUpdate }) => {
 	};
 
 	const handleUpdateQuiz = async (): Promise<void> => {
+		if (!nameRef.current?.value) {
+			window.alert("Vui lòng điền tên quiz");
+			return;
+		}
 		try {
-		} catch (err) {}
+			let img = quiz?.image;
+			if (fileRef.current) {
+				const formData = new FormData();
+				formData.append("file", fileRef.current as File);
+				formData.append("upload_preset", "pet7chaa");
+				const data = await axios.post(
+					"https://api.cloudinary.com/v1_1/dgn9bcr5s/image/upload",
+					formData
+				);
+				const result = data;
+				if (result.status === 200) {
+					img = "https://" + result.data?.url?.toString()?.split("http://")[1];
+				}
+			}
+			const url = `/v1/quiz/update/${quiz?._id}`;
+			const da = await axios.put(
+				url,
+				{
+					name: nameRef.current?.value,
+					image: img,
+				},
+				{
+					headers: {
+						token: `Bearer ${auth.user?.token}`,
+					},
+				}
+			);
+			toast.success(da?.data?.msg);
+			setQuizUpdate(null);
+		} catch (error) {
+			const err = error as AxiosError<ErrorLogin>;
+			toast.error(err?.response?.data?.msg, {
+				autoClose: 2000,
+			});
+		}
 	};
 
 	const handleDeleteQuiz = async (): Promise<void> => {
 		try {
-		} catch (err) {}
+			const url = `/v1/quiz/delete/${quiz?._id}`;
+			if (!window.confirm("Bạn thực sự muốn xóa quiz này?")) {
+				return;
+			}
+			const data = await axios.delete(url, {
+				headers: {
+					token: `Bearer ${auth.user?.token}`,
+				},
+			});
+			toast.success(data?.data?.msg);
+			setQuizUpdate(null);
+		} catch (error) {
+			const err = error as AxiosError<ErrorLogin>;
+			toast.error(err?.response?.data?.msg, {
+				autoClose: 2000,
+			});
+		}
 	};
 	return (
 		<div className="question__update__wrap">
@@ -89,7 +156,11 @@ const QuizUpdate: React.FC<props> = ({ quizUpdate, setQuizUpdate }) => {
 			</div>
 			<div className="quiz__update">
 				<div className="quiz__update__name">
-					<textarea defaultValue={quiz?.name} placeholder="Tên quiz" />
+					<textarea
+						ref={nameRef}
+						defaultValue={quiz?.name}
+						placeholder="Tên quiz"
+					/>
 				</div>
 				<div className="quiz__update__img">
 					<div className="quizCard__input">
