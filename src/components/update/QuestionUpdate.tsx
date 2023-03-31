@@ -6,16 +6,34 @@ import { toast } from "react-toastify";
 import { useAppSelector } from "../../store/store";
 
 interface props {
-	setUpdateQuesion: React.Dispatch<React.SetStateAction<question | null>>;
-	updateQuestion: question;
+	updateQuestion: {
+		question: question;
+		index: number;
+	} | null;
+	setUpdateQuesion: React.Dispatch<
+		React.SetStateAction<{ question: question; index: number } | null>
+	>;
+	setQuizAfterUpdate: React.Dispatch<
+		React.SetStateAction<
+			| {
+					question: question;
+					index: number;
+			  }
+			| undefined
+		>
+	>;
 }
 const QuestionUpdate: React.FC<props> = ({
 	updateQuestion,
 	setUpdateQuesion,
+	setQuizAfterUpdate,
 }) => {
 	const fileRef = useRef<File>();
 	const [image, setImage] = useState<string>();
-	const [item, setItem] = useState<question>();
+	const [item, setItem] = useState<{
+		question: question;
+		index: number;
+	}>();
 	const [correctAnswer, setCorrectAnswer] = useState<number>(0);
 
 	//
@@ -55,35 +73,35 @@ const QuestionUpdate: React.FC<props> = ({
 	}, [updateQuestion]);
 
 	useEffect(() => {
-		if (item && item?._id) {
-			setImage(item?.image as string);
+		if (item && item?.question?._id) {
+			setImage(item?.question?.image as string);
 		} else if (item) {
-			setImage(item?.url);
+			setImage(item?.question?.url);
 		}
 	}, [item]);
 
 	useEffect(() => {
 		if (item) {
-			switch (item?.correctAnswer) {
-				case item?.answers[0]:
+			switch (item?.question?.correctAnswer) {
+				case item?.question?.answers[0]:
 					if (correctARef.current) {
 						correctARef.current.checked = true;
 						setCorrectAnswer(0);
 					}
 					break;
-				case item?.answers[1]:
+				case item?.question?.answers[1]:
 					if (correctBRef.current) {
 						correctBRef.current.checked = true;
 						setCorrectAnswer(1);
 					}
 					break;
-				case item?.answers[2]:
+				case item?.question?.answers[2]:
 					if (correctCRef.current) {
 						correctCRef.current.checked = true;
 						setCorrectAnswer(2);
 					}
 					break;
-				case item?.answers[3]:
+				case item?.question?.answers[3]:
 					if (correctDRef.current) {
 						correctDRef.current.checked = true;
 						setCorrectAnswer(3);
@@ -117,31 +135,49 @@ const QuestionUpdate: React.FC<props> = ({
 	};
 
 	const handleUpdateQuestion = async (): Promise<void> => {
-		if (!item?._id) {
+		if (!nameRef.current?.value) {
+			toast.error("Vui lòng điền hết thông tin chỗ câu hỏi ấy.");
 			return;
 		}
-		let img = item?.image;
+		if (!answerARef.current?.value) {
+			toast.error("Vui lòng điền hết thông tin chỗ câu trả lời A ấy.");
+			return;
+		}
+		if (!answerBRef.current?.value) {
+			toast.error("Vui lòng điền hết thông tin chỗ câu trả lời B ấy.");
+			return;
+		}
+		if (!answerCRef.current?.value) {
+			toast.error("Vui lòng điền hết thông tin chỗ câu trả lời C ấy.");
+			return;
+		}
+		if (!answerDRef.current?.value) {
+			toast.error("Vui lòng điền hết thông tin chỗ câu trả lời D ấy.");
+			return;
+		}
+		if (!item?.question?._id) {
+			const answer = [
+				answerARef.current?.value || "",
+				answerBRef.current?.value || "",
+				answerCRef.current?.value || "",
+				answerDRef.current?.value || "",
+			];
+			const question: question = {
+				answers: answer,
+				name: nameRef.current?.value || "",
+				image: fileRef.current || item?.question?.image,
+				correctAnswer: item?.question?.answers[correctAnswer] || "",
+				url: fileRef.current ? image : item?.question?.url,
+			};
+			setQuizAfterUpdate({
+				index: item?.index || 0,
+				question,
+			});
+			setUpdateQuesion(null);
+			return;
+		}
+		let img = item?.question?.image;
 		try {
-			if (!nameRef.current?.value) {
-				toast.error("Vui lòng điền hết thông tin chỗ câu hỏi ấy.");
-				return;
-			}
-			if (!answerARef.current?.value) {
-				toast.error("Vui lòng điền hết thông tin chỗ câu trả lời A ấy.");
-				return;
-			}
-			if (!answerBRef.current?.value) {
-				toast.error("Vui lòng điền hết thông tin chỗ câu trả lời B ấy.");
-				return;
-			}
-			if (!answerCRef.current?.value) {
-				toast.error("Vui lòng điền hết thông tin chỗ câu trả lời C ấy.");
-				return;
-			}
-			if (!answerDRef.current?.value) {
-				toast.error("Vui lòng điền hết thông tin chỗ câu trả lời D ấy.");
-				return;
-			}
 			if (fileRef.current) {
 				const formData = new FormData();
 				formData.append("file", fileRef.current as File);
@@ -165,9 +201,9 @@ const QuestionUpdate: React.FC<props> = ({
 				answers: answer,
 				name: nameRef.current?.value || "",
 				image: img,
-				correctAnswer: item?.answers[correctAnswer],
+				correctAnswer: item?.question?.answers[correctAnswer],
 			};
-			const url = `/v1/quiz/update_question_item/${item?._id}`;
+			const url = `/v1/quiz/update_question_item/${item?.question?._id}`;
 			const da = await axios.post(
 				url,
 				{
@@ -201,7 +237,7 @@ const QuestionUpdate: React.FC<props> = ({
 				<div className="question__update-name">
 					<textarea
 						ref={nameRef}
-						defaultValue={item?.name}
+						defaultValue={item?.question?.name}
 						placeholder="Tên của câu hỏi?"
 					/>
 				</div>
@@ -298,7 +334,7 @@ const QuestionUpdate: React.FC<props> = ({
 							<div className="question__quiz__answer__items no__transform">
 								<div className="text__area__input">
 									<textarea
-										defaultValue={item?.answers[0]}
+										defaultValue={item?.question?.answers[0]}
 										ref={answerARef}
 										placeholder="Đáp án A"
 									/>
@@ -312,7 +348,7 @@ const QuestionUpdate: React.FC<props> = ({
 							<div className="question__quiz__answer__items no__transform">
 								<div className="text__area__input">
 									<textarea
-										defaultValue={item?.answers[1]}
+										defaultValue={item?.question?.answers[1]}
 										ref={answerBRef}
 										placeholder="Đáp án B"
 									/>
@@ -326,7 +362,7 @@ const QuestionUpdate: React.FC<props> = ({
 							<div className="question__quiz__answer__items no__transform">
 								<div className="text__area__input">
 									<textarea
-										defaultValue={item?.answers[2]}
+										defaultValue={item?.question?.answers[2]}
 										ref={answerCRef}
 										placeholder="Đáp án C"
 									/>
@@ -340,7 +376,7 @@ const QuestionUpdate: React.FC<props> = ({
 							<div className="question__quiz__answer__items no__transform">
 								<div className="text__area__input">
 									<textarea
-										defaultValue={item?.answers[3]}
+										defaultValue={item?.question?.answers[3]}
 										ref={answerDRef}
 										placeholder="Đáp án D"
 									/>

@@ -17,7 +17,10 @@ import CreateQuestion from "../quizAdmin/CreateQuestion";
 
 const Dashboard: React.FC = () => {
 	const [create, setCreate] = useState<boolean>(false);
-	const [updateQuestion, setUpdateQuesion] = useState<question | null>(null);
+	const [updateQuestion, setUpdateQuesion] = useState<{
+		question: question;
+		index: number;
+	} | null>(null);
 	const [quizs, setQuizs] = useState<quiz[]>();
 	const [number, setNumber] = useState<number>(0);
 	const [update, setUpdate] = useState<boolean>(false);
@@ -33,6 +36,11 @@ const Dashboard: React.FC = () => {
 	const navigate = useNavigate();
 	//
 	const auth = useAppSelector((state) => state.auth);
+
+	const [quizAfterUpdate, setQuizAfterUpdate] = useState<{
+		question: question;
+		index: number;
+	}>();
 
 	const { search } = useLocation();
 
@@ -133,7 +141,7 @@ const Dashboard: React.FC = () => {
 			<div className="dashboard">
 				<Header />
 				<Droppable
-					isDropDisabled={updateQuestion ? true : false}
+					isDropDisabled={updateQuestion || create ? true : false}
 					droppableId="quiz"
 				>
 					{(provided) => (
@@ -157,7 +165,7 @@ const Dashboard: React.FC = () => {
 				<div className="question">
 					<CreateQuestion />
 					<Droppable
-						isDropDisabled={updateQuestion ? true : false}
+						isDropDisabled={updateQuestion || create ? true : false}
 						droppableId="question"
 					>
 						{(provided) => (
@@ -200,9 +208,19 @@ const Dashboard: React.FC = () => {
 					</button>
 				)}
 			</div>
-			{create && <Create create={create} setCreate={setCreate} />}
+			{create && (
+				<Create
+					create={create}
+					setUpdateQuesion={setUpdateQuesion}
+					updateQuestion={updateQuestion}
+					setCreate={setCreate}
+					quizAfterUpdate={quizAfterUpdate}
+					setQuizAfterUpdate={setQuizAfterUpdate}
+				/>
+			)}
 			{updateQuestion && (
 				<QuestionUpdate
+					setQuizAfterUpdate={setQuizAfterUpdate}
 					setUpdateQuesion={setUpdateQuesion}
 					updateQuestion={updateQuestion}
 				/>

@@ -6,11 +6,33 @@ import Question from "../admin/Question";
 import { UseContext } from "../../App";
 import { ErrorLogin, question } from "../../model";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { postApi } from "../../api/Api";
 import { useAppSelector } from "../../store/store";
+import { useLocation } from "react-router-dom";
 interface props {
 	create: boolean;
 	setCreate: React.Dispatch<React.SetStateAction<boolean>>;
+	updateQuestion: {
+		question: question;
+		index: number;
+	} | null;
+	setUpdateQuesion: React.Dispatch<
+		React.SetStateAction<{ question: question; index: number } | null>
+	>;
+	quizAfterUpdate:
+		| {
+				question: question;
+				index: number;
+		  }
+		| undefined;
+	setQuizAfterUpdate: React.Dispatch<
+		React.SetStateAction<
+			| {
+					question: question;
+					index: number;
+			  }
+			| undefined
+		>
+	>;
 }
 
 interface quiz {
@@ -19,7 +41,14 @@ interface quiz {
 	questions: question[];
 	[key: string]: any;
 }
-const Create: React.FC<props> = ({ create, setCreate }) => {
+const Create: React.FC<props> = ({
+	create,
+	setCreate,
+	updateQuestion,
+	setUpdateQuesion,
+	quizAfterUpdate,
+	setQuizAfterUpdate,
+}) => {
 	//quiz
 	const [image, setImage] = useState<string>();
 	const [name, setName] = useState<string>("");
@@ -274,6 +303,19 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 		}
 	};
 
+	useEffect(() => {
+		if (quizAfterUpdate) {
+			const item = quizAll;
+			if (item?.questions && item?.questions?.length > 0) {
+				item.questions[quizAfterUpdate?.index] = quizAfterUpdate?.question;
+				setQuizAll({
+					...item,
+				});
+				setQuizAfterUpdate(undefined);
+			}
+		}
+	}, [quizAfterUpdate]);
+
 	return (
 		<div className="create">
 			<div className="create__container">
@@ -290,13 +332,13 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 										onDragOver={handleDragOver}
 										onDragEnter={handleDragEnter}
 										className="quizCard__label"
-										htmlFor="inputFile"
+										htmlFor="inputFileADmin"
 									></label>
 									<input
 										accept="image/*"
 										onChange={(e) => handleGetFile(e, "quiz")}
 										hidden
-										id="inputFile"
+										id="inputFileADmin"
 										type="file"
 									/>
 								</div>
@@ -341,13 +383,13 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 									onDragOver={handleDragOver}
 									onDragEnter={handleDragEnter}
 									className="quizCard__label"
-									htmlFor="inputQuestion"
+									htmlFor="inputQuestionADmin"
 								></label>
 								<input
 									accept="image/*"
 									onChange={(e) => handleGetFile(e, "question")}
 									hidden
-									id="inputQuestion"
+									id="inputQuestionADmin"
 									type="file"
 								/>
 							</div>
@@ -471,6 +513,10 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 										key={item?.name}
 										index={index}
 										type="createQuestion"
+										updateQuestion={updateQuestion}
+										setUpdateQuesion={setUpdateQuesion}
+										quizAll={quizAll}
+										setQuizAll={setQuizAll}
 									/>
 								))}
 								{provided.placeholder}

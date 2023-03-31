@@ -25,10 +25,19 @@ const Question: React.FC<props> = ({
 	type,
 	setUpdateQuesion,
 	quizId,
+	quizAll,
+	setQuizAll,
 }) => {
 	const auth = useAppSelector((state) => state.auth);
 	const handleDeleteQuestion = async (): Promise<void> => {
 		if (!question?._id || !quizId) {
+			if (quizAll) {
+				const item = quizAll;
+				item?.questions?.splice(index, 1);
+				setQuizAll({
+					...item,
+				});
+			}
 			return;
 		}
 		try {
@@ -93,7 +102,10 @@ const Question: React.FC<props> = ({
 						<div className="question__edit_btn">
 							<button
 								onClick={() => {
-									setUpdateQuesion(question);
+									setUpdateQuesion({
+										question: question,
+										index: index,
+									});
 								}}
 								className="btn btn-default button__edit"
 							>
