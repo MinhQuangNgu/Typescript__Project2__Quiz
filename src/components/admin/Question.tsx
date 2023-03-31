@@ -1,5 +1,9 @@
+import axios, { AxiosError } from "axios";
 import React from "react";
 import { Draggable } from "react-beautiful-dnd";
+import { useAppSelector } from "../../store/store";
+import { toast } from "react-toastify";
+import { ErrorLogin } from "../../model";
 
 interface props {
 	index: number;
@@ -9,11 +13,40 @@ interface props {
 		image: ProgressEvent<FileReader> | unknown;
 		name: string;
 		url?: string;
+		_id?: string;
 	};
+	quizId?: string;
 	[key: string]: any;
 	type: string;
 }
-const Question: React.FC<props> = ({ index, question, type }) => {
+const Question: React.FC<props> = ({
+	index,
+	question,
+	type,
+	setUpdateQuesion,
+	quizId,
+}) => {
+	const auth = useAppSelector((state) => state.auth);
+	const handleDeleteQuestion = async (): Promise<void> => {
+		if (!question?._id || !quizId) {
+			return;
+		}
+		try {
+			const url = `/v1/quiz/delete_question/${question?._id}/${quizId}`;
+			if (!window.confirm("Bạn muốn xóa câu hỏi này?")) {
+				return;
+			}
+			const data = await axios.delete(url, {
+				headers: {
+					token: `Bearer ${auth.user?.token}`,
+				},
+			});
+			toast.success(data?.data?.msg);
+		} catch (error) {
+			const err = error as AxiosError<ErrorLogin>;
+			toast.error(err?.response?.data?.msg);
+		}
+	};
 	return (
 		<Draggable
 			index={index}
@@ -58,8 +91,18 @@ const Question: React.FC<props> = ({ index, question, type }) => {
 					</div>
 					<div className="question__edit">
 						<div className="question__edit_btn">
-							<button className="btn btn-default button__edit">Update</button>
-							<button className="btn btn-default button__edit_second">
+							<button
+								onClick={() => {
+									setUpdateQuesion(question);
+								}}
+								className="btn btn-default button__edit"
+							>
+								Update
+							</button>
+							<button
+								onClick={handleDeleteQuestion}
+								className="btn btn-default button__edit_second"
+							>
 								Delete
 							</button>
 						</div>

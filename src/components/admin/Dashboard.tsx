@@ -8,13 +8,14 @@ import Create from "../quizAdmin/Create";
 import { UseContext } from "../../App";
 import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
-import { ErrorLogin, quiz } from "../../model";
+import { ErrorLogin, question, quiz } from "../../model";
 import { useAppSelector } from "../../store/store";
 import QuestionUpdate from "../update/QuestionUpdate";
+import QuizUpdate from "../update/QuizUpdate";
 
 const Dashboard: React.FC = () => {
 	const [create, setCreate] = useState<boolean>(false);
-	const [updateQuestion, setUpdateQuesion] = useState<number>(-1);
+	const [updateQuestion, setUpdateQuesion] = useState<question | null>(null);
 	const [quizs, setQuizs] = useState<quiz[]>();
 	const [number, setNumber] = useState<number>(0);
 	const [update, setUpdate] = useState<boolean>(false);
@@ -109,7 +110,7 @@ const Dashboard: React.FC = () => {
 			<div className="dashboard">
 				<Header />
 				<Droppable
-					isDropDisabled={updateQuestion !== -1 ? true : false}
+					isDropDisabled={updateQuestion ? true : false}
 					droppableId="quiz"
 				>
 					{(provided) => (
@@ -132,7 +133,7 @@ const Dashboard: React.FC = () => {
 					)}
 				</Droppable>
 				<Droppable
-					isDropDisabled={updateQuestion !== -1 ? true : false}
+					isDropDisabled={updateQuestion ? true : false}
 					droppableId="question"
 				>
 					{(provided) => (
@@ -150,7 +151,10 @@ const Dashboard: React.FC = () => {
 											...item,
 											url: item?.image,
 										}}
+										quizId={quizs[number]?._id}
 										index={index}
+										setUpdateQuesion={setUpdateQuesion}
+										updateQuestion={updateQuestion}
 									/>
 								))}
 							{provided.placeholder}
@@ -176,8 +180,15 @@ const Dashboard: React.FC = () => {
 				)}
 			</div>
 			{create && <Create create={create} setCreate={setCreate} />}
-			{updateQuestion !== -1 && <QuestionUpdate />}
-			{updateQuestion !== -1 && <div className="item__cancel"></div>}
+			{updateQuestion && (
+				<QuestionUpdate
+					setUpdateQuesion={setUpdateQuesion}
+					updateQuestion={updateQuestion}
+				/>
+			)}
+			{updateQuestion && <div className="item__cancel"></div>}
+			<div className="item__cancel"></div>
+			<QuizUpdate />
 		</div>
 	);
 };

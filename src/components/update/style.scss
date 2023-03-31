@@ -75,3 +75,28 @@
 	position: relative;
 	height: 20rem;
 }
+.quiz__update {
+	margin-top: 2rem;
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	margin-bottom: 2rem;
+}
+.quiz__update__img {
+	width: 40%;
+	position: relative;
+}
+.quiz__update__name {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	margin-bottom: 2rem;
+	& > textarea {
+		width: 80%;
+		min-height: 8rem;
+		outline: none;
+		resize: vertical;
+		padding: 0.5rem;
+		font-size: 1.7rem;
+	}
+}

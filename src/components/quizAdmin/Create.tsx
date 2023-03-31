@@ -4,7 +4,7 @@ import { Droppable } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
 import Question from "../admin/Question";
 import { UseContext } from "../../App";
-import { ErrorLogin } from "../../model";
+import { ErrorLogin, question } from "../../model";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { postApi } from "../../api/Api";
 import { useAppSelector } from "../../store/store";
@@ -12,14 +12,7 @@ interface props {
 	create: boolean;
 	setCreate: React.Dispatch<React.SetStateAction<boolean>>;
 }
-interface question {
-	answers: string[];
-	correctAnswer: string;
-	image: ProgressEvent<FileReader> | unknown;
-	name: string;
-	url?: string;
-	[key: string]: any;
-}
+
 interface quiz {
 	name: string;
 	image: ProgressEvent<FileReader> | unknown;

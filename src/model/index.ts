@@ -25,3 +25,12 @@ export interface quiz {
 		}
 	];
 }
+export interface question {
+	answers: string[];
+	correctAnswer: string;
+	image: ProgressEvent<FileReader> | unknown;
+	name: string;
+	url?: string;
+	_id?: string;
+	[key: string]: any;
+}
