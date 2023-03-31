@@ -10,9 +10,11 @@ import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { ErrorLogin, quiz } from "../../model";
 import { useAppSelector } from "../../store/store";
+import QuestionUpdate from "../update/QuestionUpdate";
 
 const Dashboard: React.FC = () => {
 	const [create, setCreate] = useState<boolean>(false);
+	const [updateQuestion, setUpdateQuesion] = useState<number>(-1);
 	const [quizs, setQuizs] = useState<quiz[]>();
 	const [number, setNumber] = useState<number>(0);
 	const [update, setUpdate] = useState<boolean>(false);
@@ -49,6 +51,17 @@ const Dashboard: React.FC = () => {
 					const currentItem = item[number]?.questions?.splice(index, 1);
 					item[number]?.questions?.splice(target, 0, currentItem[0]);
 					countRef.current++;
+					setQuizs(item);
+					setUpdate(!update);
+				} else if (
+					result?.destination?.droppableId === "quiz" &&
+					result?.source?.droppableId === "quiz"
+				) {
+					const target = result?.destination?.index || 0;
+					const index = result?.source?.index || 0;
+					const item = quizs || [];
+					const currentItem = item.splice(index, 1);
+					item.splice(target, 0, currentItem[0]);
 					setQuizs(item);
 					setUpdate(!update);
 				}
@@ -95,7 +108,10 @@ const Dashboard: React.FC = () => {
 		<div style={{ position: "relative" }} className="container d-flex center-h">
 			<div className="dashboard">
 				<Header />
-				<Droppable isDropDisabled={create ? true : false} droppableId="quiz">
+				<Droppable
+					isDropDisabled={updateQuestion !== -1 ? true : false}
+					droppableId="quiz"
+				>
 					{(provided) => (
 						<div
 							{...provided.droppableProps}
@@ -116,7 +132,7 @@ const Dashboard: React.FC = () => {
 					)}
 				</Droppable>
 				<Droppable
-					isDropDisabled={create ? true : false}
+					isDropDisabled={updateQuestion !== -1 ? true : false}
 					droppableId="question"
 				>
 					{(provided) => (
@@ -160,6 +176,8 @@ const Dashboard: React.FC = () => {
 				)}
 			</div>
 			{create && <Create create={create} setCreate={setCreate} />}
+			{updateQuestion !== -1 && <QuestionUpdate />}
+			{updateQuestion !== -1 && <div className="item__cancel"></div>}
 		</div>
 	);
 };

@@ -260,7 +260,6 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 				image: img,
 				questions: ques,
 			};
-			console.log(newQuiz);
 
 			const url = "/v1/quiz/create";
 			const data = await axios.post(
@@ -275,6 +274,7 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 				}
 			);
 			toast.success(data?.data?.msg);
+			setCreate(false);
 		} catch (error) {
 			const err = error as AxiosError<ErrorLogin>;
 			toast.error(err?.response?.data?.msg);
