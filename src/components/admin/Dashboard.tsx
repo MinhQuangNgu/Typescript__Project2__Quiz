@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import Header from "../header/Header";
 import "./style.scss";
 import { Droppable } from "react-beautiful-dnd";
@@ -14,6 +14,9 @@ const Dashboard: React.FC = () => {
 	const [create, setCreate] = useState<boolean>(false);
 	const [quizs, setQuizs] = useState<quiz[]>();
 	const [number, setNumber] = useState<number>(0);
+	const [update, setUpdate] = useState<boolean>(false);
+
+	const countRef = useRef<number>(0);
 
 	const { result } = useContext(UseContext);
 	useEffect(() => {
@@ -30,6 +33,29 @@ const Dashboard: React.FC = () => {
 			here = false;
 		};
 	}, []);
+	useEffect(() => {
+		if (result) {
+			if (result?.destination) {
+				if (
+					result?.destination?.droppableId === "question" &&
+					result?.source?.droppableId === "question"
+				) {
+					const target = result?.destination?.index || 0;
+					const index = result?.source?.index || 0;
+					const item = quizs || [];
+					const currentItem = item[number]?.questions?.splice(index, 1);
+					item[number]?.questions?.splice(target, 0, currentItem[0]);
+					countRef.current++;
+					setQuizs(item);
+					setUpdate(!update);
+				}
+			}
+		}
+	}, [result]);
+
+	useEffect(() => {
+		countRef.current = 0;
+	}, [number]);
 
 	return (
 		<div style={{ position: "relative" }} className="container d-flex center-h">
@@ -84,6 +110,11 @@ const Dashboard: React.FC = () => {
 				>
 					Tạo mới
 				</button>
+				{countRef.current > 0 && (
+					<button style={{ backgroundColor: "#FF8A08", marginLeft: "1rem" }}>
+						Save
+					</button>
+				)}
 			</div>
 			{create && <Create create={create} setCreate={setCreate} />}
 		</div>
