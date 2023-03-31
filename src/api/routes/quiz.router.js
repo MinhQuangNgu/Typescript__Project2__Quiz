@@ -11,6 +11,12 @@ router.post(
 	quizController.updateListQuestion
 );
 router.post(
+	"/update_question_item/:id",
+	middleWare.verifyToken,
+	middleWare.verifyAdmin,
+	quizController.updateQuestion
+);
+router.post(
 	"/create",
 	middleWare.verifyToken,
 	middleWare.verifyAdmin,
@@ -21,6 +27,12 @@ router.delete(
 	middleWare.verifyToken,
 	middleWare.verifyAdmin,
 	quizController.deleteQuiz
+);
+router.delete(
+	"/delete_question/:id/:quizId",
+	middleWare.verifyToken,
+	middleWare.verifyAdmin,
+	quizController.deleteQuestion
 );
 router.put(
 	"/update/:id",
