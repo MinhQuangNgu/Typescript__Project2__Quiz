@@ -20,6 +20,7 @@ interface cache {
 			index?: number;
 		};
 	};
+	musicRef?: React.RefObject<HTMLAudioElement>;
 }
 export const UseContext = createContext<cache>({
 	cache: {},
@@ -30,8 +31,12 @@ function App() {
 	const cacheRef = useRef<object>({});
 	const [role, setRole] = useState<string>("");
 	const [result, setResult] = useState({});
+	const musicRef = useRef<HTMLAudioElement>(null);
 	const auth = useAppSelector((state) => state.auth);
 	useEffect((): void => {
+		if (musicRef.current) {
+			musicRef.current.volume = 0.2;
+		}
 		if (auth.user?.token) {
 			const data: {
 				exp: number;
@@ -47,11 +52,22 @@ function App() {
 	};
 	return (
 		<UseContext.Provider
-			value={{ cache: cacheRef.current, role: role, result: result }}
+			value={{
+				cache: cacheRef.current,
+				role: role,
+				result: result,
+				musicRef: musicRef,
+			}}
 		>
 			<DragDropContext onDragEnd={onDragEnd}>
 				<Router>
 					<div className="App">
+						<audio ref={musicRef} hidden controls autoPlay>
+							<source
+								src="https://res.cloudinary.com/dgn9bcr5s/video/upload/v1680272888/quiz/Good_day_lofi_ambient_music_-_chill_beats_to_relax-study_to_up6i5j.mp3"
+								type="audio/mpeg"
+							/>
+						</audio>
 						<Routes>
 							{publicRouter?.map((item: router, index: number) => {
 								const Page = item?.element;

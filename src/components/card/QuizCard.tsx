@@ -1,22 +1,23 @@
 import React from "react";
 import "./style.scss";
 import { Link } from "react-router-dom";
-const QuizCard: React.FC = () => {
+import { quiz } from "../../model";
+interface props {
+	item: quiz;
+}
+const QuizCard: React.FC<props> = ({ item }) => {
 	return (
 		<div className="quizCard">
 			<div className="quizCard__wrap">
-				<Link to="/quizDetail/as">
+				<Link to={`/quizDetail/${item?._id}`}>
 					<div className="quizCard__image">
-						<img
-							src="https://antimatter.vn/wp-content/uploads/2022/05/background-dep-1.jpg"
-							alt="Quiz Image"
-						/>
+						<img src={item?.image} alt="Quiz Image" />
 					</div>
 				</Link>
 				<div className="quizCard__name">
 					<Link style={{ textDecoration: "none" }} to="/quizDetail/asd">
 						<div className="quizCard__name-elips">
-							<i>Quang Ngu Quang Ngu Quang Ngu QuangNguQuangNguNgu</i>
+							<i>{item?.name}</i>
 						</div>
 					</Link>
 				</div>

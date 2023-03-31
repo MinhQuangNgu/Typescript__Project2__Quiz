@@ -1,9 +1,32 @@
 import React from "react";
-
-const QuizAnswer: React.FC = () => {
+interface props {
+	item: string;
+	setAnswer: React.Dispatch<React.SetStateAction<string | null>>;
+	answer: string | null;
+	correct: string;
+	index: number;
+}
+const QuizAnswer: React.FC<props> = ({
+	index,
+	item,
+	setAnswer,
+	answer,
+	correct,
+}) => {
 	return (
-		<div className="quiz__answer__container">
-			<div className="quiz__answer__items">Quang Ngu</div>
+		<div
+			onClick={() => {
+				setAnswer(item);
+			}}
+			className="quiz__answer__container"
+		>
+			<label
+				className={`quiz__answer__items item_${index} ${
+					answer ? (item === correct ? "success" : "error") : ""
+				}`}
+			>
+				{item}
+			</label>
 		</div>
 	);
 };
