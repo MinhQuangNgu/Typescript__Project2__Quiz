@@ -8,7 +8,7 @@ interface props {
 		correctAnswer: string;
 		image: ProgressEvent<FileReader> | unknown;
 		name: string;
-		url: string;
+		url?: string;
 	};
 	[key: string]: any;
 	type: string;

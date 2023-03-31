@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Header from "../header/Header";
 import "./style.scss";
 import { Droppable } from "react-beautiful-dnd";
@@ -6,10 +6,31 @@ import QuizCardAdmin from "./QuizCardAdmin";
 import Question from "./Question";
 import Create from "../quizAdmin/Create";
 import { UseContext } from "../../App";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { quiz } from "../../model";
+
 const Dashboard: React.FC = () => {
 	const [create, setCreate] = useState<boolean>(false);
+	const [quizs, setQuizs] = useState<quiz[]>();
+	const [number, setNumber] = useState<number>(0);
 
 	const { result } = useContext(UseContext);
+	useEffect(() => {
+		let here = true;
+		axios
+			.get("/v1/quiz")
+			.then((res) => {
+				setQuizs(res?.data?.quiz);
+			})
+			.catch((err) => {
+				toast.error(err?.response?.data?.msg);
+			});
+		return () => {
+			here = false;
+		};
+	}, []);
+
 	return (
 		<div style={{ position: "relative" }} className="container d-flex center-h">
 			<div className="dashboard">
@@ -21,8 +42,9 @@ const Dashboard: React.FC = () => {
 							ref={provided.innerRef}
 							className="dashboard__navbar"
 						>
-							<QuizCardAdmin index={3} />
-							<QuizCardAdmin index={4} />
+							{quizs?.map((item, index) => (
+								<QuizCardAdmin item={item} index={index} key={item?._id} />
+							))}
 							{provided.placeholder}
 						</div>
 					)}
@@ -37,6 +59,18 @@ const Dashboard: React.FC = () => {
 							ref={provided.innerRef}
 							className="question"
 						>
+							{quizs &&
+								quizs[number]?.questions?.map((item, index) => (
+									<Question
+										type="admin"
+										key={item?._id}
+										question={{
+											...item,
+											url: item?.image,
+										}}
+										index={index}
+									/>
+								))}
 							{provided.placeholder}
 						</div>
 					)}

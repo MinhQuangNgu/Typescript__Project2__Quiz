@@ -138,6 +138,10 @@
 .question__edit_btn:hover .button__edit_second {
 	display: block;
 }
+.quizCard__image,
+.quizCard__name {
+	border: 0.1rem solid rgba(0, 0, 0, 0.2);
+}
 
 @keyframes moreWidth {
 	100% {

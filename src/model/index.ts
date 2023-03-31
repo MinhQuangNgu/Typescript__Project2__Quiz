@@ -11,3 +11,17 @@ export interface user {
 export interface ErrorLogin {
 	msg: string;
 }
+export interface quiz {
+	name: string;
+	image: string;
+	_id: string;
+	questions: [
+		{
+			_id: string;
+			correctAnswer: string;
+			image: string;
+			name: string;
+			answers: string[];
+		}
+	];
+}

@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import Question from "../admin/Question";
 import { UseContext } from "../../App";
 import { ErrorLogin } from "../../model";
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { postApi } from "../../api/Api";
 import { useAppSelector } from "../../store/store";
 interface props {
@@ -17,7 +17,7 @@ interface question {
 	correctAnswer: string;
 	image: ProgressEvent<FileReader> | unknown;
 	name: string;
-	url: string;
+	url?: string;
 	[key: string]: any;
 }
 interface quiz {
@@ -201,12 +201,12 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 		} else {
 			item.name = nameRef.current?.value || "";
 		}
-		// if (!item?.name || !item?.image || item?.questions?.length === 0) {
-		// 	toast.error("Vui lòng điền thông tin hoặc ít nhất 1 câu hỏi", {
-		// 		autoClose: 2000,
-		// 	});
-		// 	return;
-		// }
+		if (!item?.name || !item?.image || item?.questions?.length === 0) {
+			toast.error("Vui lòng điền thông tin hoặc ít nhất 1 câu hỏi", {
+				autoClose: 2000,
+			});
+			return;
+		}
 		let imageUrlArray = [];
 		try {
 			const formData = new FormData();
@@ -218,8 +218,8 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 					formData
 				)
 			);
-			item?.questions?.forEach((item) => {
-				formData.append("file", item.image as File);
+			item?.questions?.forEach((infor) => {
+				formData.append("file", infor.image as File);
 				formData.append("upload_preset", "pet7chaa");
 				imageUrlArray.push(
 					axios.post(
@@ -229,22 +229,53 @@ const Create: React.FC<props> = ({ create, setCreate }) => {
 				);
 			});
 			const urlData = await Promise.allSettled(imageUrlArray);
-			console.log(urlData);
+			const ques = [];
+			for (let i = 1; i < urlData?.length; i++) {
+				const result: PromiseSettledResult<AxiosResponse<any, any>> =
+					urlData[i];
+				let img =
+					"https://res.cloudinary.com/dgn9bcr5s/image/upload/v1680227623/quiz/360_F_507584110_KNIfe7d3hUAEpraq10J7MCPmtny8EH7A_hnfyk6.jpg";
+				if (result.status === "fulfilled") {
+					img =
+						"https://" +
+						result.value.data?.url?.toString()?.split("http://")[1];
+				}
+				const ite = {
+					...item?.questions[i - 1],
+					image: img,
+				};
+				delete ite.url;
+				ques.push(ite);
+			}
+			const result: PromiseSettledResult<AxiosResponse<any, any>> = urlData[0];
+			let img =
+				"https://res.cloudinary.com/dgn9bcr5s/image/upload/v1680227623/quiz/360_F_507584110_KNIfe7d3hUAEpraq10J7MCPmtny8EH7A_hnfyk6.jpg";
+
+			if (result.status === "fulfilled") {
+				img =
+					"https://" + result.value.data?.url?.toString()?.split("http://")[1];
+			}
+			const newQuiz = {
+				name: item.name,
+				image: img,
+				questions: ques,
+			};
+			console.log(newQuiz);
 
 			const url = "/v1/quiz/create";
-			// const data = await axios.post(
-			// 	url,
-			// 	{
-			// 		quiz: item,
-			// 	},
-			// 	{
-			// 		headers: {
-			// 			token: `Bearer ${auth.user?.token}`,
-			// 		},
-			// 	}
-			// );
+			const data = await axios.post(
+				url,
+				{
+					quiz: newQuiz,
+				},
+				{
+					headers: {
+						token: `Bearer ${auth.user?.token}`,
+					},
+				}
+			);
+			toast.success(data?.data?.msg);
 		} catch (error) {
-			console.log(error);
 			const err = error as AxiosError<ErrorLogin>;
 			toast.error(err?.response?.data?.msg);
 		}

@@ -1,15 +1,17 @@
 import React from "react";
 import { Draggable } from "react-beautiful-dnd";
+import { quiz } from "../../model";
 
 interface props {
 	index: number;
+	item: quiz;
 }
-const QuizCardAdmin: React.FC<props> = ({ index }) => {
+const QuizCardAdmin: React.FC<props> = ({ index, item }) => {
 	const handleChoose = () => {
 		console.log("Here");
 	};
 	return (
-		<Draggable index={index} draggableId={index.toString()}>
+		<Draggable index={index} draggableId={index.toString() + item?._id}>
 			{(provided) => (
 				<div
 					onDoubleClick={handleChoose}
@@ -21,14 +23,11 @@ const QuizCardAdmin: React.FC<props> = ({ index }) => {
 				>
 					<div className="quizCard__wrap">
 						<div className="quizCard__image">
-							<img
-								src="https://antimatter.vn/wp-content/uploads/2022/05/background-dep-1.jpg"
-								alt="Quiz Image"
-							/>
+							<img src={item?.image} alt="Quiz Image" />
 						</div>
 						<div className="quizCard__name">
 							<div className="quizCard__name-elips">
-								<i>{index}</i>
+								<i>{item?.name}</i>
 							</div>
 						</div>
 					</div>
