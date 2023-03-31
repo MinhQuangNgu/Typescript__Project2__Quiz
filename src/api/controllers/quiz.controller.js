@@ -5,28 +5,29 @@ module.exports = {
 	createNewQuiz: async (req, res) => {
 		const { quiz } = req.body;
 		const ques = [];
-		console.log(quiz);
-		// for (const item of questions) {
-		// 	const quesion = new questionModel({
-		// 		answers: item.answers,
-		// 		name: item.name,
-		// 		correctAnswer: item.correctAnswer,
-		// 	});
-		// 	ques.push(quesion._id);
-		// 	await quesion.save();
-		// }
-		// const quiz = new quizModel({
-		// 	questions: ques,
-		// 	name: name,
-		// });
-		// await quiz.save();
+		for (const item of quiz.questions) {
+			const quesion = new questionModel({
+				answers: item.answers,
+				name: item.name,
+				image: item.image,
+				correctAnswer: item.correctAnswer,
+			});
+			ques.push(quesion._id);
+			await quesion.save();
+		}
+		const quizNew = new quizModel({
+			questions: ques,
+			name: quiz.name,
+			image: quiz.image,
+		});
+		await quizNew.save();
 		return res.status(200).json({ msg: "Tạo mới quiz thành công." });
 	},
 	getQuiz: async (req, res) => {
 		const { id } = req.params;
 		const quizs = await quizModel.findById(id).populate({
 			path: "questions",
-			select: "-createdAt -updatedAt",
+			select: "-updatedAt",
 		});
 		return res.status(200).json({
 			quizs,
@@ -62,5 +63,27 @@ module.exports = {
 			name: quiz.name,
 		});
 		return res.status(200).json({ msg: "Cật nhật thành công." });
+	},
+	getAll: async (_, res) => {
+		const quiz = await quizModel
+			.find()
+			.select("-createdAt -updatedAt -__v")
+			.populate({
+				path: "questions",
+				select: "-updatedAt -__v -createdAt",
+			});
+		return res.status(200).json({ quiz });
+	},
+	updateListQuestion: async (req, res) => {
+		const { id } = req.params;
+		const { questions } = req.body;
+		const quiz = await quizModel.findById(id);
+		if (!quiz) {
+			return res.status(400).json({ msg: "Không tìm thấy" });
+		}
+		await quizModel.findByIdAndUpdate(id, {
+			questions: questions,
+		});
+		return res.status(200).json({ msg: "Cập nhật quiz thành công." });
 	},
 };
