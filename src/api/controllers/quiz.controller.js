@@ -49,18 +49,14 @@ module.exports = {
 	},
 	updateQuiz: async (req, res) => {
 		const { id } = req.params;
-		const { quiz } = req.body;
+		const { name, image } = req.body;
 		const oldQuiz = await quizModel.findById(id);
 		if (!oldQuiz) {
 			return;
 		}
-		for (const item of quiz.questions) {
-			await questionModel.findByIdAndUpdate(item, {
-				...item,
-			});
-		}
 		await quizModel.findByIdAndUpdate(id, {
-			name: quiz.name,
+			name: name,
+			image: image,
 		});
 		return res.status(200).json({ msg: "Cật nhật thành công." });
 	},
