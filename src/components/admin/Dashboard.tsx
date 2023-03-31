@@ -21,7 +21,12 @@ const Dashboard: React.FC = () => {
 	const [update, setUpdate] = useState<boolean>(false);
 
 	const countRef = useRef<number>(0);
-
+	//
+	const [quizUpdate, setQuizUpdate] = useState<{
+		name: string;
+		image: string;
+	} | null>(null);
+	//
 	const auth = useAppSelector((state) => state.auth);
 
 	const { result } = useContext(UseContext);
@@ -126,6 +131,7 @@ const Dashboard: React.FC = () => {
 									item={item}
 									index={index}
 									key={item?._id}
+									setQuizUpdate={setQuizUpdate}
 								/>
 							))}
 							{provided.placeholder}
@@ -186,9 +192,25 @@ const Dashboard: React.FC = () => {
 					updateQuestion={updateQuestion}
 				/>
 			)}
-			{updateQuestion && <div className="item__cancel"></div>}
-			<div className="item__cancel"></div>
-			<QuizUpdate />
+			{updateQuestion && (
+				<div
+					onClick={() => {
+						setUpdateQuesion(null);
+					}}
+					className="item__cancel"
+				></div>
+			)}
+			{quizUpdate && (
+				<div
+					onClick={() => {
+						setQuizUpdate(null);
+					}}
+					className="item__cancel"
+				></div>
+			)}
+			{quizUpdate && (
+				<QuizUpdate quizUpdate={quizUpdate} setQuizUpdate={setQuizUpdate} />
+			)}
 		</div>
 	);
 };

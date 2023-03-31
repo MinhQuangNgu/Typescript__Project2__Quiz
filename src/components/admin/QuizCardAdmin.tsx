@@ -7,13 +7,24 @@ interface props {
 	item: quiz;
 	number: number;
 	setNumber: React.Dispatch<React.SetStateAction<number>>;
+	setQuizUpdate: React.Dispatch<
+		React.SetStateAction<{
+			name: string;
+			image: string;
+		} | null>
+	>;
 }
-const QuizCardAdmin: React.FC<props> = ({ index, item, number, setNumber }) => {
+const QuizCardAdmin: React.FC<props> = ({
+	index,
+	item,
+	setNumber,
+	setQuizUpdate,
+}) => {
 	const handleChoose = () => {
 		setNumber(index);
 	};
 	const handleUpdate = () => {
-		console.log("Updateing");
+		setQuizUpdate(item);
 	};
 	return (
 		<Draggable index={index} draggableId={index.toString() + item?._id}>
