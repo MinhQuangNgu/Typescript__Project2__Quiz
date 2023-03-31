@@ -22,6 +22,12 @@ router.post(
 	middleWare.verifyAdmin,
 	quizController.createNewQuiz
 );
+router.post(
+	"/create_question/:id",
+	middleWare.verifyToken,
+	middleWare.verifyAdmin,
+	quizController.createNewQuestion
+);
 router.delete(
 	"/delete/:id",
 	middleWare.verifyToken,

@@ -90,7 +90,10 @@ module.exports = {
 			return res.status(400).json({ msg: "Không tồn tại." });
 		}
 		await questionModel.findByIdAndUpdate(id, {
-			...question,
+			answers: question.answers,
+			name: question.name,
+			image: question.image,
+			correctAnswer: question.correctAnswer,
 		});
 		return res.status(200).json({ msg: "Cập nhật thành công." });
 	},
@@ -109,5 +112,25 @@ module.exports = {
 		});
 		await questionModel.findByIdAndDelete(id);
 		return res.status(200).json({ msg: "Xóa thành công." });
+	},
+	createNewQuestion: async (req, res) => {
+		const { id } = req.params;
+		const { question } = req.body;
+		const quiz = await quizModel.findById(id);
+		if (!quiz) {
+			return res.status(400).json({ msg: "Không tìm thấy" });
+		}
+		const newQuesion = new questionModel({
+			answers: question.answers,
+			name: question.name,
+			image: question.image,
+			correctAnswer: question.correctAnswer,
+		});
+		await newQuesion.save();
+		quiz.questions.push(newQuesion._id);
+		await quizModel.findByIdAndUpdate(id, {
+			questions: quiz.questions,
+		});
+		return res.status(200).json({ msg: "Cập nhật thành công." });
 	},
 };
