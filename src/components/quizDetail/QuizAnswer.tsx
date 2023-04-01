@@ -16,7 +16,9 @@ const QuizAnswer: React.FC<props> = ({
 	return (
 		<div
 			onClick={() => {
-				setAnswer(item);
+				if (!answer) {
+					setAnswer(item);
+				}
 			}}
 			className="quiz__answer__container"
 		>

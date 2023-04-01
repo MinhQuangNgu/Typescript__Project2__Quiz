@@ -8,7 +8,9 @@ import { useAppSelector } from "./store/store";
 import jwt_decoded from "jwt-decode";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 interface cache {
-	cache: object;
+	cache?: React.MutableRefObject<{
+		[key: string]: unknown;
+	}>;
 	role: string;
 	result?: {
 		destination?: {
@@ -23,12 +25,13 @@ interface cache {
 	musicRef?: React.RefObject<HTMLAudioElement>;
 }
 export const UseContext = createContext<cache>({
-	cache: {},
 	role: "",
 	result: {},
 });
 function App() {
-	const cacheRef = useRef<object>({});
+	const cacheRef = useRef<{
+		[key: string]: unknown;
+	}>({});
 	const [role, setRole] = useState<string>("");
 	const [result, setResult] = useState({});
 	const musicRef = useRef<HTMLAudioElement>(null);
@@ -53,7 +56,7 @@ function App() {
 	return (
 		<UseContext.Provider
 			value={{
-				cache: cacheRef.current,
+				cache: cacheRef,
 				role: role,
 				result: result,
 				musicRef: musicRef,
@@ -62,12 +65,14 @@ function App() {
 			<DragDropContext onDragEnd={onDragEnd}>
 				<Router>
 					<div className="App">
-						<audio ref={musicRef} hidden controls autoPlay>
-							<source
-								src="https://res.cloudinary.com/dgn9bcr5s/video/upload/v1680272888/quiz/Good_day_lofi_ambient_music_-_chill_beats_to_relax-study_to_up6i5j.mp3"
-								type="audio/mpeg"
-							/>
-						</audio>
+						<div className="radio__container">
+							<audio controls autoPlay>
+								<source
+									src="https://res.cloudinary.com/dgn9bcr5s/video/upload/v1680272888/quiz/Good_day_lofi_ambient_music_-_chill_beats_to_relax-study_to_up6i5j.mp3"
+									type="audio/mpeg"
+								/>
+							</audio>
+						</div>
 						<Routes>
 							{publicRouter?.map((item: router, index: number) => {
 								const Page = item?.element;

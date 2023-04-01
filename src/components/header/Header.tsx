@@ -49,7 +49,12 @@ const Header: React.FC = () => {
 									<i>Dashboard</i>
 								</div>
 							)}
-							<div className="header__navbar_items">
+							<div
+								onClick={() => {
+									navigate("/history");
+								}}
+								className="header__navbar_items"
+							>
 								<i>Kết quả cũ</i>
 							</div>
 							<div

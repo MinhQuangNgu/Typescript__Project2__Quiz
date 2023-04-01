@@ -31,3 +31,10 @@
 	border: none;
 	border-radius: 5rem;
 }
+.radio__container {
+	position: fixed;
+	bottom: 3rem;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 500;
+}

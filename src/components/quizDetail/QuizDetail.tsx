@@ -2,40 +2,59 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import "./style.scss";
 import Header from "../header/Header";
 import QuizAnswer from "./QuizAnswer";
-import { useParams } from "react-router-dom";
-import { quiz } from "../../model";
-import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
+import { ErrorLogin, quiz } from "../../model";
+import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { UseContext } from "../../App";
+import { useAppSelector } from "../../store/store";
 const QuizDetail: React.FC = () => {
 	const { slug } = useParams();
 	const [quiz, setQuiz] = useState<quiz>();
 	const [number, setNumber] = useState<number>(0);
 	const [answer, setAnswer] = useState<string | null>(null);
 	const [times, setTimes] = useState<number>(1800);
+	const [percent, setPercent] = useState<number>(0);
 	const correctNumber = useRef<number>(0);
-
 	const successRef = useRef<HTMLAudioElement>(null);
 	const wrongRef = useRef<HTMLAudioElement>(null);
-	const { musicRef } = useContext(UseContext);
+	const { cache } = useContext(UseContext);
+
+	const navigate = useNavigate();
+
+	const [result, setResult] = useState<boolean>(false);
 	useEffect(() => {
 		let here = false;
 		const url = `/v1/quiz/${slug}`;
 		setTimes(1800);
-		if (musicRef?.current) {
-			musicRef.current.play();
-		}
+
 		if (successRef.current) {
 			successRef.current.volume = 0.1;
 		}
 		if (wrongRef.current) {
 			wrongRef.current.volume = 0.05;
 		}
+		if (cache?.current) {
+			const cacheRef = cache.current as {
+				[key: string]: unknown;
+			};
+			if (cacheRef[url]) {
+				const quizDetail = cacheRef[url] as quiz;
+				setQuiz(quizDetail);
+				return;
+			}
+		}
 		axios
 			.get(url)
 			.then((res) => {
 				if (here) {
 					return;
+				}
+				if (cache?.current) {
+					const cacheRef = cache.current as {
+						[key: string]: unknown;
+					};
+					cacheRef[url] = res?.data?.quizs;
 				}
 				setQuiz(res?.data?.quizs);
 			})
@@ -50,13 +69,15 @@ const QuizDetail: React.FC = () => {
 	}, [slug]);
 	useEffect(() => {
 		const timeInterval = setInterval(() => {
-			setTimes((prev) => Math.max(0, prev - 1));
+			if (!result) {
+				setTimes((prev) => Math.max(0, prev - 1));
+			}
 		}, 1000);
 
 		return () => {
 			clearInterval(timeInterval);
 		};
-	}, [slug]);
+	}, [slug, result]);
 
 	useEffect(() => {
 		if (answer && quiz) {
@@ -67,20 +88,63 @@ const QuizDetail: React.FC = () => {
 				setTimeout(() => {
 					correctNumber.current++;
 					setAnswer(null);
-					setNumber((prev) => Math.min(prev + 1, quiz?.questions?.length - 1));
+					setNumber((prev) => {
+						return prev + 1;
+					});
 				}, 3000);
 			} else {
 				if (wrongRef.current) {
 					wrongRef.current.play();
 				}
 				setTimeout(() => {
-					correctNumber.current++;
 					setAnswer(null);
-					setNumber((prev) => Math.min(prev + 1, quiz?.questions?.length - 1));
+					setNumber((prev) => prev + 1);
 				}, 3000);
 			}
 		}
 	}, [answer]);
+
+	const auth = useAppSelector((state) => state.auth);
+
+	const handleUpdateHistory = async (): Promise<void> => {
+		if (!quiz) {
+			return;
+		}
+		try {
+			await axios.post(
+				`/v1/quiz/take_quiz`,
+				{
+					id: slug,
+					result: (correctNumber?.current / quiz?.questions?.length) * 100,
+					time: 1800 - times,
+				},
+				{
+					headers: {
+						token: `Bearer ${auth.user?.token}`,
+					},
+				}
+			);
+		} catch (error) {
+			const err = error as AxiosError<ErrorLogin>;
+			toast.error(err?.response?.data?.msg, {
+				autoClose: 3000,
+			});
+		}
+	};
+
+	useEffect(() => {
+		if (quiz) {
+			if (number > quiz?.questions?.length - 1) {
+				setPercent((correctNumber?.current / quiz?.questions?.length) * 100);
+				setResult(true);
+				setNumber(quiz?.questions?.length - 1);
+				handleUpdateHistory();
+			}
+		}
+	}, [number]);
+	const style = {
+		background: `conic-gradient(#56CCF2 ${percent * 3.6}deg,transparent 0deg)`,
+	};
 	return (
 		<div className="container d-flex center-h">
 			<div className="audio_controller">
@@ -127,6 +191,62 @@ const QuizDetail: React.FC = () => {
 					)}`}</i>
 				</div>
 			</div>
+			{result && (
+				<div className="point">
+					<div className="point__times">
+						<div
+							onClick={() => {
+								navigate("/");
+							}}
+						>
+							&times;
+						</div>
+					</div>
+					<div className="point__result">
+						<div className="point__full">
+							<div className="point__circle" style={style}></div>
+							<div className="point__percent">
+								{quiz && Number.parseFloat(percent.toString()).toFixed(2)}%
+							</div>
+						</div>
+						<div className="point__answers">
+							<div>
+								Câu đúng : <i>{correctNumber?.current} câu</i>
+							</div>
+							<div>
+								Câu sai :
+								<i>
+									{" "}
+									{quiz && quiz.questions?.length - correctNumber?.current} câu
+								</i>
+							</div>
+							<div>
+								Thời gian:
+								<i>
+									{" "}
+									{`${
+										Math.floor((1800 - times) / 60) >= 10 ? "" : "0"
+									}${Math.floor((1800 - times) / 60)} phút ${
+										Math.floor((1800 - times) % 60) >= 10 ? "" : "0"
+									}${Math.floor((1800 - times) % 60)}`}{" "}
+									giây
+								</i>
+							</div>
+						</div>
+					</div>
+					<div className="point__button">
+						<button
+							onClick={() => {
+								navigate("/");
+							}}
+							className="btn btn-default"
+						>
+							Ok
+						</button>
+					</div>
+				</div>
+			)}
+			{result && <div className="point__cancel"></div>}
 		</div>
 	);
 };

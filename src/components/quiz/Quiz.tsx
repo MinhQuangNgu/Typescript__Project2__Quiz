@@ -7,14 +7,30 @@ import { UseContext } from "../../App";
 
 const Quiz: React.FC = () => {
 	const [quizs, setQuizs] = useState<quiz[]>();
-	const { musicRef } = useContext(UseContext);
+	const { cache } = useContext(UseContext);
 	useEffect(() => {
 		let here = true;
+		if (cache?.current) {
+			const cacheRef = cache?.current as {
+				[key: string]: unknown;
+			};
+			if (cacheRef["/v1/quiz"]) {
+				const quizAr = cacheRef["/v1/quiz"] as quiz[];
+				setQuizs(quizAr);
+				return;
+			}
+		}
 		axios
 			.get(`/v1/quiz`)
 			.then((res) => {
 				if (!here) {
 					return;
+				}
+				if (cache?.current) {
+					const cacheRef = cache?.current as {
+						[key: string]: unknown;
+					};
+					cacheRef["/v1/quiz"] = res?.data?.quiz;
 				}
 				setQuizs(res?.data?.quiz);
 			})
@@ -31,11 +47,6 @@ const Quiz: React.FC = () => {
 		};
 	}, []);
 
-	useEffect(() => {
-		if (musicRef?.current) {
-			musicRef.current.play();
-		}
-	}, [quizs]);
 	return (
 		<div className="quiz">
 			{quizs &&

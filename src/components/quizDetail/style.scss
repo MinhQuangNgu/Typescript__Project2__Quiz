@@ -72,3 +72,84 @@
 	bottom: 3rem;
 	z-index: 2000;
 }
+.point__cancel {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.6);
+	z-index: 1000;
+}
+.point {
+	position: fixed;
+	width: 30%;
+	min-height: 20rem;
+	background-color: white;
+	top: 50%;
+	left: 50%;
+	z-index: 1001;
+	transform: translate(-50%, -50%);
+}
+.point__times {
+	display: flex;
+	justify-content: flex-end;
+	& > div {
+		margin: 1rem;
+		width: 2rem;
+		height: 2rem;
+		border: 0.1rem solid rgba(0, 0, 0, 0.7);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 50%;
+		font-size: 2rem;
+		padding-bottom: 0.3rem;
+		cursor: pointer;
+	}
+}
+.point__circle {
+	width: 10rem;
+	height: 10rem;
+	border-radius: 50%;
+}
+.point__full {
+	width: 10rem;
+	height: 10rem;
+	border-radius: 50%;
+	border: 0.1rem solid #56ccf2;
+	position: relative;
+}
+.point__percent {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 2rem;
+	font-weight: 500;
+	color: black;
+}
+.point__result {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.point__answers {
+	margin-left: 1rem;
+	font-size: 1.8rem;
+	& > div {
+		margin: 0.5rem 0;
+	}
+	& > div:first-child {
+		color: green;
+	}
+	& > div:nth-child(2) {
+		color: red;
+	}
+}
+.point__button {
+	display: flex;
+	justify-content: center;
+	margin-top: 3rem;
+	margin-bottom: 2rem;
+}

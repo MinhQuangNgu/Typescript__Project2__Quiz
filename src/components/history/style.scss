@@ -1,0 +1,45 @@
+.quiz__container {
+	margin-top: 2rem;
+	min-height: calc(100vh - 10rem);
+}
+.quizCard {
+	position: relative;
+}
+.quizCard__point {
+	position: absolute;
+	top: 1rem;
+	left: -1.1rem;
+	width: 8rem;
+	border-radius: 0 0.2rem 0.2rem 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: white;
+	font-size: 1.7rem;
+	padding-bottom: 0.2rem;
+	height: 2.5rem;
+	background-color: #ff8a08;
+	&::after {
+		content: "";
+		position: absolute;
+		left: -0.05rem;
+		bottom: -1.15rem;
+		border-left: 0.7rem solid transparent;
+		border-right: 0.7rem solid #ff8a08;
+		border-bottom: 0.7rem solid transparent;
+		border-top: 0.7rem solid #ff8a08;
+	}
+}
+.quizCard__time {
+	position: absolute;
+	left: 0;
+	bottom: 2rem;
+	width: 12rem;
+	height: 2rem;
+	background-color: #ff8a08;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-size: 1.3rem;
+}

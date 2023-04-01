@@ -15,7 +15,10 @@ const QuizCard: React.FC<props> = ({ item }) => {
 					</div>
 				</Link>
 				<div className="quizCard__name">
-					<Link style={{ textDecoration: "none" }} to="/quizDetail/asd">
+					<Link
+						style={{ textDecoration: "none" }}
+						to={`/quizDetail/${item?._id}`}
+					>
 						<div className="quizCard__name-elips">
 							<i>{item?.name}</i>
 						</div>
