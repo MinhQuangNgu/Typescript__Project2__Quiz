@@ -184,7 +184,7 @@ const Create: React.FC<props> = ({
 		setQuesitionImg("");
 	};
 
-	const { result } = useContext(UseContext);
+	const { result, setLoading } = useContext(UseContext);
 
 	const auth = useAppSelector((state) => state.auth);
 
@@ -260,6 +260,9 @@ const Create: React.FC<props> = ({
 			});
 			const urlData = await Promise.allSettled(imageUrlArray);
 			const ques = [];
+			if (setLoading) {
+				setLoading(true);
+			}
 			for (let i = 1; i < urlData?.length; i++) {
 				const result: PromiseSettledResult<AxiosResponse<any, any>> =
 					urlData[i];
@@ -305,7 +308,13 @@ const Create: React.FC<props> = ({
 			);
 			toast.success(data?.data?.msg);
 			setCreate(false);
+			if (setLoading) {
+				setLoading(false);
+			}
 		} catch (error) {
+			if (setLoading) {
+				setLoading(false);
+			}
 			const err = error as AxiosError<ErrorLogin>;
 			toast.error(err?.response?.data?.msg);
 		}

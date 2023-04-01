@@ -18,7 +18,7 @@ const QuizDetail: React.FC = () => {
 	const correctNumber = useRef<number>(0);
 	const successRef = useRef<HTMLAudioElement>(null);
 	const wrongRef = useRef<HTMLAudioElement>(null);
-	const { cache } = useContext(UseContext);
+	const { cache, setLoading } = useContext(UseContext);
 
 	const navigate = useNavigate();
 
@@ -27,7 +27,6 @@ const QuizDetail: React.FC = () => {
 		let here = false;
 		const url = `/v1/quiz/${slug}`;
 		setTimes(1800);
-
 		if (successRef.current) {
 			successRef.current.volume = 0.1;
 		}
@@ -44,11 +43,20 @@ const QuizDetail: React.FC = () => {
 				return;
 			}
 		}
+		if (setLoading) {
+			setLoading(true);
+		}
 		axios
 			.get(url)
 			.then((res) => {
 				if (here) {
+					if (setLoading) {
+						setLoading(false);
+					}
 					return;
+				}
+				if (setLoading) {
+					setLoading(false);
 				}
 				if (cache?.current) {
 					const cacheRef = cache.current as {
@@ -59,6 +67,9 @@ const QuizDetail: React.FC = () => {
 				setQuiz(res?.data?.quizs);
 			})
 			.catch((err) => {
+				if (setLoading) {
+					setLoading(false);
+				}
 				toast.error(err?.response?.data?.msg, {
 					autoClose: 2000,
 				});

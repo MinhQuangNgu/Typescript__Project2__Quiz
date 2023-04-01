@@ -7,7 +7,7 @@ import { UseContext } from "../../App";
 
 const Quiz: React.FC = () => {
 	const [quizs, setQuizs] = useState<quiz[]>();
-	const { cache } = useContext(UseContext);
+	const { cache, setLoading } = useContext(UseContext);
 	useEffect(() => {
 		let here = true;
 		if (cache?.current) {
@@ -20,11 +20,20 @@ const Quiz: React.FC = () => {
 				return;
 			}
 		}
+		if (setLoading) {
+			setLoading(true);
+		}
 		axios
 			.get(`/v1/quiz`)
 			.then((res) => {
 				if (!here) {
+					if (setLoading) {
+						setLoading(false);
+					}
 					return;
+				}
+				if (setLoading) {
+					setLoading(false);
 				}
 				if (cache?.current) {
 					const cacheRef = cache?.current as {
@@ -35,6 +44,9 @@ const Quiz: React.FC = () => {
 				setQuizs(res?.data?.quiz);
 			})
 			.catch((err) => {
+				if (setLoading) {
+					setLoading(false);
+				}
 				if (!here) {
 					return;
 				}

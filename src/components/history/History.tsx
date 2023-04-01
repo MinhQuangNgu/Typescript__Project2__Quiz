@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./style.scss";
 import Header from "../header/Header";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import { useAppSelector } from "../../store/store";
 import axios from "axios";
+import { UseContext } from "../../App";
 interface history {
 	quiz: {
 		image: string;
@@ -17,8 +18,12 @@ interface history {
 const History: React.FC = () => {
 	const auth = useAppSelector((state) => state.auth);
 	const [history, setHistory] = useState<history[]>([]);
+	const { setLoading } = useContext(UseContext);
 	useEffect(() => {
 		let here = true;
+		if (setLoading) {
+			setLoading(true);
+		}
 		axios
 			.get("/v1/quiz/result", {
 				headers: {
@@ -26,10 +31,18 @@ const History: React.FC = () => {
 				},
 			})
 			.then((res) => {
+				if (setLoading) {
+					setLoading(false);
+				}
 				if (!here) {
 					return;
 				}
 				setHistory(res?.data?.histories);
+			})
+			.catch(() => {
+				if (setLoading) {
+					setLoading(false);
+				}
 			});
 		return () => {
 			here = false;

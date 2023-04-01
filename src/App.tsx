@@ -7,6 +7,7 @@ import { ToastContainer } from "react-toastify";
 import { useAppSelector } from "./store/store";
 import jwt_decoded from "jwt-decode";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
+import Loading from "./loading/Loading";
 interface cache {
 	cache?: React.MutableRefObject<{
 		[key: string]: unknown;
@@ -23,6 +24,7 @@ interface cache {
 		};
 	};
 	musicRef?: React.RefObject<HTMLAudioElement>;
+	setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export const UseContext = createContext<cache>({
 	role: "",
@@ -36,6 +38,7 @@ function App() {
 	const [result, setResult] = useState({});
 	const musicRef = useRef<HTMLAudioElement>(null);
 	const auth = useAppSelector((state) => state.auth);
+	const [loading, setLoading] = useState<boolean>(false);
 	useEffect((): void => {
 		if (musicRef.current) {
 			musicRef.current.volume = 0.2;
@@ -60,6 +63,7 @@ function App() {
 				role: role,
 				result: result,
 				musicRef: musicRef,
+				setLoading: setLoading,
 			}}
 		>
 			<DragDropContext onDragEnd={onDragEnd}>
@@ -108,6 +112,7 @@ function App() {
 								})}
 						</Routes>
 						<ToastContainer style={{ fontSize: "1.5rem" }} />
+						{loading && <Loading />}
 					</div>
 				</Router>
 			</DragDropContext>
