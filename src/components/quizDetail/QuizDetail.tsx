@@ -201,7 +201,7 @@ const QuizDetail: React.FC = () => {
 				<Header />
 				<div className="quizDetail__quiz">
 					<div className="quizDetail__quiz__title d-flex center-h">
-						<i>{quiz?.questions[number]?.name} ?</i>
+						<i>{quiz?.questions[number]?.name}</i>
 					</div>
 					<div className="d-flex center-h quizDetail__image">
 						<img src={quiz?.questions[number]?.image} alt="oki" />

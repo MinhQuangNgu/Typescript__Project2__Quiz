@@ -33,8 +33,7 @@
 }
 .radio__container {
 	position: fixed;
-	bottom: 3rem;
-	left: 50%;
-	transform: translateX(-50%);
+	top: 0.5rem;
+	right: 0%;
 	z-index: 500;
 }
