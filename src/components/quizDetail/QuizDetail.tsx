@@ -20,6 +20,8 @@ const QuizDetail: React.FC = () => {
 	const wrongRef = useRef<HTMLAudioElement>(null);
 	const { cache, setLoading } = useContext(UseContext);
 
+	const alreadyArr = useRef<number[]>([]);
+
 	const navigate = useNavigate();
 
 	const [result, setResult] = useState<boolean>(false);
@@ -91,6 +93,31 @@ const QuizDetail: React.FC = () => {
 	}, [slug, result]);
 
 	useEffect(() => {
+		if (quiz) {
+			setRandomNumber();
+		}
+	}, [quiz]);
+
+	const setRandomNumber = (): void => {
+		if (quiz) {
+			const num = generateUniqueRandomNumber(
+				alreadyArr.current,
+				quiz?.questions?.length
+			);
+			alreadyArr.current.push(num);
+			setNumber(num);
+		}
+	};
+
+	function generateUniqueRandomNumber(array: number[], max: number): number {
+		let num = Math.floor(Math.random() * max);
+		while (array.includes(num)) {
+			num = Math.floor(Math.random() * max);
+		}
+		return num;
+	}
+
+	useEffect(() => {
 		if (answer && quiz) {
 			if (answer === quiz?.questions[number]?.correctAnswer) {
 				if (successRef.current) {
@@ -99,9 +126,7 @@ const QuizDetail: React.FC = () => {
 				setTimeout(() => {
 					correctNumber.current++;
 					setAnswer(null);
-					setNumber((prev) => {
-						return prev + 1;
-					});
+					setRandomNumber();
 				}, 3000);
 			} else {
 				if (wrongRef.current) {
@@ -109,7 +134,7 @@ const QuizDetail: React.FC = () => {
 				}
 				setTimeout(() => {
 					setAnswer(null);
-					setNumber((prev) => prev + 1);
+					setRandomNumber();
 				}, 3000);
 			}
 		}
@@ -145,7 +170,7 @@ const QuizDetail: React.FC = () => {
 
 	useEffect(() => {
 		if (quiz) {
-			if (number > quiz?.questions?.length - 1) {
+			if (alreadyArr.current.length > quiz?.questions?.length - 1) {
 				setPercent((correctNumber?.current / quiz?.questions?.length) * 100);
 				setResult(true);
 				setNumber(quiz?.questions?.length - 1);
