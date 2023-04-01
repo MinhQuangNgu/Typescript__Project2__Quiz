@@ -123,7 +123,11 @@ const Register: React.FC = () => {
 						</div>
 					)}
 					<div className="form__input d-flex center-h">
-						<input ref={emailRef} type="text" placeholder="Email" />
+						<input
+							ref={emailRef}
+							type="text"
+							placeholder="Tên đăng nhập (dùng để đăng nhập)"
+						/>
 					</div>
 					{err.name && (
 						<div className="form__input d-flex">
@@ -131,7 +135,11 @@ const Register: React.FC = () => {
 						</div>
 					)}
 					<div className="form__input d-flex center-h">
-						<input ref={nameRef} type="text" placeholder="Name" />
+						<input
+							ref={nameRef}
+							type="text"
+							placeholder="Tên hiển thị (chỉ dùng hiển thị)"
+						/>
 					</div>
 					{err.password && (
 						<div className="form__input d-flex">

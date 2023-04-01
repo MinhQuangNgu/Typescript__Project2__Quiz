@@ -76,7 +76,7 @@ const Login: React.FC = () => {
 				</div>
 				<div className="form">
 					<div className="form__input d-flex center-h">
-						<input ref={emailRef} type="text" placeholder="Email" />
+						<input ref={emailRef} type="text" placeholder="Tên đăng nhập" />
 					</div>
 					<div className="form__input d-flex center-h">
 						<input ref={passwordRef} type="text" placeholder="Mật khẩu" />
