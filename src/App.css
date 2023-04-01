@@ -37,8 +37,19 @@
 	left: 0%;
 	z-index: 500;
 }
-@media (max-width: 740px) {
-	.radio__container {
-		display: none;
-	}
+.radio__sound {
+	position: fixed;
+	right: 2rem;
+	top: 2rem;
+}
+.radio__sound > div {
+	width: 3.7rem;
+	height: 3.7rem;
+	border: 0.1rem solid rgba(0, 0, 0, 0.4);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.8rem;
+	border-radius: 50%;
+	cursor: pointer;
 }

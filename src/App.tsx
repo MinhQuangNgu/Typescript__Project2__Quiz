@@ -37,11 +37,12 @@ function App() {
 	const [role, setRole] = useState<string>("");
 	const [result, setResult] = useState({});
 	const musicRef = useRef<HTMLAudioElement>(null);
+	const soundRef = useRef<HTMLAudioElement>(null);
 	const auth = useAppSelector((state) => state.auth);
 	const [loading, setLoading] = useState<boolean>(false);
 	useEffect((): void => {
-		if (musicRef.current) {
-			musicRef.current.volume = 0.2;
+		if (soundRef.current) {
+			soundRef.current.volume = 0.2;
 		}
 		if (auth.user?.token) {
 			const data: {
@@ -55,6 +56,19 @@ function App() {
 	}, [auth.user?.token]);
 	const onDragEnd = (result: DropResult) => {
 		setResult(result);
+	};
+
+	let countRef = useRef<boolean>(false);
+
+	const changeSound = () => {
+		countRef.current = !countRef.current;
+		if (soundRef.current) {
+			if (countRef.current) {
+				soundRef.current.play();
+			} else {
+				soundRef.current.pause();
+			}
+		}
 	};
 	return (
 		<UseContext.Provider
@@ -70,12 +84,17 @@ function App() {
 				<Router>
 					<div className="App">
 						<div className="radio__container">
-							<audio controls autoPlay>
+							<audio ref={soundRef} hidden controls autoPlay>
 								<source
 									src="https://res.cloudinary.com/dgn9bcr5s/video/upload/v1680272888/quiz/Good_day_lofi_ambient_music_-_chill_beats_to_relax-study_to_up6i5j.mp3"
 									type="audio/mpeg"
 								/>
 							</audio>
+						</div>
+						<div className="radio__sound">
+							<div onClick={changeSound}>
+								<i className="fa-solid fa-music"></i>
+							</div>
 						</div>
 						<Routes>
 							{publicRouter?.map((item: router, index: number) => {
