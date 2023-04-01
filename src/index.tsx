@@ -13,7 +13,7 @@ const root = ReactDOM.createRoot(
 );
 
 let persistor = persistStore(store);
-axios.defaults.baseURL = "http://localhost:5000";
+axios.defaults.baseURL = "https://typescript-project2-quiz.vercel.app";
 root.render(
 	<Provider store={store}>
 		<React.StrictMode>
