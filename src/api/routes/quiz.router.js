@@ -2,8 +2,10 @@ const router = require("express").Router();
 const quizController = require("../controllers/quiz.controller");
 const middleWare = require("../middleWare");
 
+router.get("/result", middleWare.verifyToken, quizController.getResultQuiz);
 router.get("/", quizController.getAll);
 router.get("/:id", quizController.getQuiz);
+router.post("/take_quiz", middleWare.verifyToken, quizController.takeQuiz);
 router.post(
 	"/update_question/:id",
 	middleWare.verifyToken,

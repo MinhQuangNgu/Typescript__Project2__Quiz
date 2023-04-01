@@ -1,6 +1,6 @@
 const quizModel = require("../models/quiz.model");
 const questionModel = require("../models/question.model");
-
+const userModel = require("../models/user.model");
 module.exports = {
 	createNewQuiz: async (req, res) => {
 		const { quiz } = req.body;
@@ -132,5 +132,41 @@ module.exports = {
 			questions: quiz.questions,
 		});
 		return res.status(200).json({ msg: "Cập nhật thành công." });
+	},
+	takeQuiz: async (req, res) => {
+		const { id, result, time } = req.body;
+		const user = req.user;
+		const oldUser = await userModel.findById(user.id);
+		const quiz = await quizModel.findById(id);
+		if (!oldUser) {
+			return res.status(400).json({ msg: "Vui lòng đăng nhập" });
+		}
+		if (!quiz) {
+			return res
+				.status(400)
+				.json({ msg: "Xin lỗi nhưng quiz này không còn tồn tại nữa." });
+		}
+		oldUser.histories.unshift({
+			quiz: quiz._id,
+			result,
+			time,
+		});
+		await userModel.findByIdAndUpdate(user.id, {
+			histories: oldUser.histories,
+		});
+		return res.status(200).json({ msg: "Làm quiz thành công." });
+	},
+	getResultQuiz: async (req, res) => {
+		const user = req.user;
+		const oldUser = await userModel.findById(user.id).populate({
+			path: "histories.quiz",
+			select: "name image _id",
+		});
+		if (!oldUser) {
+			return res.status(400).json({ msg: "Vui lòng đăng nhập" });
+		}
+		return res.status(200).json({
+			histories: oldUser.histories,
+		});
 	},
 };
