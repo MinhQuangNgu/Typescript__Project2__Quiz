@@ -73,6 +73,12 @@ const Login: React.FC = () => {
 						</div>
 					</div>
 				</div>
+				<div className="guild">
+					<i>Tài khoản demo admin:</i>
+				</div>
+				<div className="guild_2">
+					<i>email và password: demo</i>
+				</div>
 				<div className="d-flex center-h button">
 					<button
 						style={{ marginRight: "1rem" }}

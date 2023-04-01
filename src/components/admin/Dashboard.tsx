@@ -54,7 +54,7 @@ const Dashboard: React.FC = () => {
 		}
 	}, [search, update]);
 
-	const { result } = useContext(UseContext);
+	const { result, role } = useContext(UseContext);
 	useEffect(() => {
 		let here = true;
 		axios
@@ -107,6 +107,12 @@ const Dashboard: React.FC = () => {
 	}, [number]);
 
 	const handleUpdateQuestion = async (): Promise<void> => {
+		if (role !== "admin") {
+			toast.warn("Demo thôi nhé.", {
+				autoClose: 2000,
+			});
+			return;
+		}
 		if (!quizs) {
 			return;
 		}

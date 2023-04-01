@@ -1,9 +1,10 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useContext } from "react";
 import "./style.scss";
 import axios, { AxiosError } from "axios";
 import { useAppSelector } from "../../store/store";
 import { ErrorLogin, question } from "../../model";
 import { toast } from "react-toastify";
+import { UseContext } from "../../App";
 
 interface props {
 	quizUpdate: {
@@ -80,7 +81,15 @@ const QuizUpdate: React.FC<props> = ({ quizUpdate, setQuizUpdate }) => {
 		e.stopPropagation();
 	};
 
+	const { role } = useContext(UseContext);
+
 	const handleUpdateQuiz = async (): Promise<void> => {
+		if (role !== "admin") {
+			toast.warn("Demo thôi nhé.", {
+				autoClose: 2000,
+			});
+			return;
+		}
 		if (!nameRef.current?.value) {
 			window.alert("Vui lòng điền tên quiz");
 			return;
@@ -124,6 +133,12 @@ const QuizUpdate: React.FC<props> = ({ quizUpdate, setQuizUpdate }) => {
 	};
 
 	const handleDeleteQuiz = async (): Promise<void> => {
+		if (role !== "admin") {
+			toast.warn("Demo thôi nhé.", {
+				autoClose: 2000,
+			});
+			return;
+		}
 		try {
 			const url = `/v1/quiz/delete/${quiz?._id}`;
 			if (!window.confirm("Bạn thực sự muốn xóa quiz này?")) {

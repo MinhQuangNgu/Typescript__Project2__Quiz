@@ -1,10 +1,11 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
 import "./style.scss";
 import { useLocation } from "react-router-dom";
 import axios, { AxiosError } from "axios";
 import { ErrorLogin } from "../../model";
 import { toast } from "react-toastify";
 import { useAppSelector } from "../../store/store";
+import { UseContext } from "../../App";
 const CreateQuestion = () => {
 	const [quesionImg, setQuesitionImg] = useState<string>();
 	const [correctAnswer, setCorrectAnswer] = useState<number>(0);
@@ -51,8 +52,15 @@ const CreateQuestion = () => {
 
 	const { search } = useLocation();
 	const auth = useAppSelector((state) => state.auth);
+	const { role } = useContext(UseContext);
 
 	const createNewQuestion = async (): Promise<void> => {
+		if (role !== "admin") {
+			toast.warn("Demo thôi nhé.", {
+				autoClose: 2000,
+			});
+			return;
+		}
 		const id = new URLSearchParams(search).get("id") || "";
 		if (!id) {
 			return;

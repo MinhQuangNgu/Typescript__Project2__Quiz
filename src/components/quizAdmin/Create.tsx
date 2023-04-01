@@ -210,7 +210,15 @@ const Create: React.FC<props> = ({
 		}
 	}, [result]);
 
+	const { role } = useContext(UseContext);
+
 	const handleCreateNewQuiz = async (): Promise<void> => {
+		if (role !== "admin") {
+			toast.warn("Demo thôi nhé.", {
+				autoClose: 2000,
+			});
+			return;
+		}
 		const item: quiz = {
 			name: nameRef.current?.value || "",
 			image: fileRef.current,

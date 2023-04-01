@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import "./style.scss";
 import { ErrorLogin, question } from "../../model";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import { useAppSelector } from "../../store/store";
+import { UseContext } from "../../App";
 
 interface props {
 	updateQuestion: {
@@ -134,7 +135,15 @@ const QuestionUpdate: React.FC<props> = ({
 		e.stopPropagation();
 	};
 
+	const { role } = useContext(UseContext);
+
 	const handleUpdateQuestion = async (): Promise<void> => {
+		if (role !== "admin") {
+			toast.warn("Demo thôi nhé.", {
+				autoClose: 2000,
+			});
+			return;
+		}
 		if (!nameRef.current?.value) {
 			toast.error("Vui lòng điền hết thông tin chỗ câu hỏi ấy.");
 			return;

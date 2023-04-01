@@ -95,6 +95,17 @@ function App() {
 										/>
 									);
 								})}
+							{role === "demo" &&
+								privateRouter?.map((item: router, index: number) => {
+									const Page = item?.element;
+									return (
+										<Route
+											key={index + "demo"}
+											path={item?.path}
+											element={<Page />}
+										/>
+									);
+								})}
 						</Routes>
 						<ToastContainer style={{ fontSize: "1.5rem" }} />
 					</div>

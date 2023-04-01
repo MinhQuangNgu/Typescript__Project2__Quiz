@@ -1,9 +1,10 @@
 import axios, { AxiosError } from "axios";
-import React from "react";
+import React, { useContext } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import { useAppSelector } from "../../store/store";
 import { toast } from "react-toastify";
 import { ErrorLogin } from "../../model";
+import { UseContext } from "../../App";
 
 interface props {
 	index: number;
@@ -29,7 +30,15 @@ const Question: React.FC<props> = ({
 	setQuizAll,
 }) => {
 	const auth = useAppSelector((state) => state.auth);
+
+	const { role } = useContext(UseContext);
 	const handleDeleteQuestion = async (): Promise<void> => {
+		if (role !== "admin") {
+			toast.warn("Demo thôi nhé.", {
+				autoClose: 2000,
+			});
+			return;
+		}
 		if (!question?._id || !quizId) {
 			if (quizAll) {
 				const item = quizAll;

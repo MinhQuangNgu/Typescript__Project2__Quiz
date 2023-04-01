@@ -49,6 +49,16 @@ const Header: React.FC = () => {
 									<i>Dashboard</i>
 								</div>
 							)}
+							{role === "demo" && (
+								<div
+									onClick={() => {
+										navigate("/admin");
+									}}
+									className="header__navbar_items"
+								>
+									<i>Dashboard</i>
+								</div>
+							)}
 							<div
 								onClick={() => {
 									navigate("/history");
