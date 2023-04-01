@@ -80,9 +80,6 @@ const Register: React.FC = () => {
 					check = true;
 				}
 			}
-			if (setLoading) {
-				setLoading(false);
-			}
 			setErr(msg);
 			if (check) {
 				return;
@@ -97,6 +94,9 @@ const Register: React.FC = () => {
 				}
 			);
 			toast.success(data?.data?.msg);
+			if (setLoading) {
+				setLoading(false);
+			}
 			navigate("/login", {
 				replace: true,
 			});
