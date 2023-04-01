@@ -27,19 +27,22 @@ const Register: React.FC = () => {
 	const passwordRef = useRef<HTMLInputElement>(null);
 	const repasswordRef = useRef<HTMLInputElement>(null);
 	const handleChangeTypeOfPassword = (msg: string): void => {
-		if (msg === "password") {
-			if (passwordRef.current?.type === "text") {
-				passwordRef.current.type = "password";
-			} else if (passwordRef.current?.type === "password") {
-				passwordRef.current.type = "text";
-			}
-		} else {
-			if (repasswordRef.current?.type === "text") {
-				repasswordRef.current.type = "password";
-			} else if (repasswordRef.current?.type === "password") {
-				repasswordRef.current.type = "text";
-			}
-		}
+		toast.success("Xin lỗi nhưng phải bỏ cái này không nó báo lỗi.", {
+			autoClose: 2000,
+		});
+		// if (msg === "password") {
+		// 	if (passwordRef.current?.type === "text") {
+		// 		passwordRef.current.type = "password";
+		// 	} else if (passwordRef.current?.type === "password") {
+		// 		passwordRef.current.type = "text";
+		// 	}
+		// } else {
+		// 	if (repasswordRef.current?.type === "text") {
+		// 		repasswordRef.current.type = "password";
+		// 	} else if (repasswordRef.current?.type === "password") {
+		// 		repasswordRef.current.type = "text";
+		// 	}
+		// }
 	};
 
 	const handleRegister = async (): Promise<void> => {
@@ -125,7 +128,7 @@ const Register: React.FC = () => {
 						</div>
 					)}
 					<div className="form__input d-flex center-h">
-						<input ref={passwordRef} type="password" placeholder="Password" />
+						<input ref={passwordRef} type="text" placeholder="Mật khẩu" />
 						<div className="form__input-eyes">
 							<i
 								onClick={() => handleChangeTypeOfPassword("password")}
@@ -139,7 +142,11 @@ const Register: React.FC = () => {
 						</div>
 					)}
 					<div className="form__input d-flex center-h">
-						<input ref={repasswordRef} type="password" placeholder="Password" />
+						<input
+							ref={repasswordRef}
+							type="text"
+							placeholder="Nhập lại mật khẩu"
+						/>
 						<div className="form__input-eyes">
 							<i
 								onClick={() => handleChangeTypeOfPassword("repassword")}

@@ -15,11 +15,14 @@ const Login: React.FC = () => {
 	const emailRef = useRef<HTMLInputElement>(null);
 
 	const handleChangeTypeOfPassword = (): void => {
-		if (passwordRef.current?.type === "text") {
-			passwordRef.current.type = "password";
-		} else if (passwordRef.current?.type === "password") {
-			passwordRef.current.type = "text";
-		}
+		toast.success("Xin lỗi nhưng phải bỏ cái này không nó báo lỗi.", {
+			autoClose: 2000,
+		});
+		// if (passwordRef.current?.type === "text") {
+		// 	passwordRef.current.type = "password";
+		// } else if (passwordRef.current?.type === "password") {
+		// 	passwordRef.current.type = "text";
+		// }
 	};
 
 	const handleLogin = async (): Promise<void> => {
@@ -64,7 +67,7 @@ const Login: React.FC = () => {
 						<input ref={emailRef} type="text" placeholder="Email" />
 					</div>
 					<div className="form__input d-flex center-h">
-						<input ref={passwordRef} type="password" placeholder="Password" />
+						<input ref={passwordRef} type="text" placeholder="Mật khẩu" />
 						<div className="form__input-eyes">
 							<i
 								onClick={handleChangeTypeOfPassword}
