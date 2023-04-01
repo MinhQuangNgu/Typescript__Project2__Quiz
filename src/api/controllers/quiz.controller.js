@@ -1,6 +1,7 @@
 const quizModel = require("../models/quiz.model");
 const questionModel = require("../models/question.model");
 const userModel = require("../models/user.model");
+const client = require("../../config/redis.config");
 module.exports = {
 	createNewQuiz: async (req, res) => {
 		const { quiz } = req.body;
@@ -21,14 +22,20 @@ module.exports = {
 			image: quiz.image,
 		});
 		await quizNew.save();
+		client.DEL("quizs");
 		return res.status(200).json({ msg: "Tạo mới quiz thành công." });
 	},
 	getQuiz: async (req, res) => {
 		const { id } = req.params;
+		const data = await client.get(id);
+		if (data) {
+			return res.status(200).json({ quizs: JSON.parse(data) });
+		}
 		const quizs = await quizModel.findById(id).populate({
 			path: "questions",
 			select: "-updatedAt",
 		});
+		client.set(id, JSON.stringify(quizs));
 		return res.status(200).json({
 			quizs,
 		});
@@ -43,6 +50,8 @@ module.exports = {
 			await questionModel.findByIdAndDelete(item);
 		}
 		await quizModel.findByIdAndDelete(id);
+		client.DEL("quizs");
+		client.DEL(id);
 		return res.status(200).json({
 			msg: "Xóa thành công.",
 		});
@@ -58,9 +67,15 @@ module.exports = {
 			name: name,
 			image: image,
 		});
+		client.DEL("quizs");
+		client.DEL(id);
 		return res.status(200).json({ msg: "Cật nhật thành công." });
 	},
 	getAll: async (_, res) => {
+		const data = await client.get("quizs");
+		if (data) {
+			return res.status(200).json({ quiz: JSON.parse(data) });
+		}
 		const quiz = await quizModel
 			.find()
 			.select("-createdAt -updatedAt -__v")
@@ -68,6 +83,7 @@ module.exports = {
 				path: "questions",
 				select: "-updatedAt -__v -createdAt",
 			});
+		client.set("quizs", JSON.stringify(quiz));
 		return res.status(200).json({ quiz });
 	},
 	updateListQuestion: async (req, res) => {
@@ -80,6 +96,8 @@ module.exports = {
 		await quizModel.findByIdAndUpdate(id, {
 			questions: questions,
 		});
+		client.DEL("quizs");
+		client.DEL(id);
 		return res.status(200).json({ msg: "Cập nhật quiz thành công." });
 	},
 	updateQuestion: async (req, res) => {
@@ -95,6 +113,8 @@ module.exports = {
 			image: question.image,
 			correctAnswer: question.correctAnswer,
 		});
+		client.DEL("quizs");
+		client.DEL(id);
 		return res.status(200).json({ msg: "Cập nhật thành công." });
 	},
 	deleteQuestion: async (req, res) => {
@@ -111,6 +131,8 @@ module.exports = {
 			questions,
 		});
 		await questionModel.findByIdAndDelete(id);
+		client.DEL("quizs");
+		client.DEL(id);
 		return res.status(200).json({ msg: "Xóa thành công." });
 	},
 	createNewQuestion: async (req, res) => {
@@ -131,6 +153,8 @@ module.exports = {
 		await quizModel.findByIdAndUpdate(id, {
 			questions: quiz.questions,
 		});
+		client.DEL("quizs");
+		client.DEL(id);
 		return res.status(200).json({ msg: "Cập nhật thành công." });
 	},
 	takeQuiz: async (req, res) => {
@@ -154,10 +178,15 @@ module.exports = {
 		await userModel.findByIdAndUpdate(user.id, {
 			histories: oldUser.histories,
 		});
+		client.DEL(user.id);
 		return res.status(200).json({ msg: "Làm quiz thành công." });
 	},
 	getResultQuiz: async (req, res) => {
 		const user = req.user;
+		const data = await client.get(user.id);
+		if (data) {
+			return res.status(200).json({ histories: JSON.parse(data) });
+		}
 		const oldUser = await userModel.findById(user.id).populate({
 			path: "histories.quiz",
 			select: "name image _id",
@@ -165,6 +194,7 @@ module.exports = {
 		if (!oldUser) {
 			return res.status(400).json({ msg: "Vui lòng đăng nhập" });
 		}
+		client.set(user.id, JSON.stringify(oldUser.histories));
 		return res.status(200).json({
 			histories: oldUser.histories,
 		});

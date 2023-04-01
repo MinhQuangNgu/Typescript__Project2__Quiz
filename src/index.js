@@ -14,10 +14,9 @@ dotenv.config();
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 const config = require("./config/database.config");
+const redis = require("./config/redis.config");
 config.mongoDB();
-config.redisDB().connect();
 config.cloudinaryConfig();
-
 router(app);
 
 const PORT = process.env.PORT || 5000;
