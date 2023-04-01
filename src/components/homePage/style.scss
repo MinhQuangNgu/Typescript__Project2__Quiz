@@ -1,8 +1,15 @@
+@import "../../responsive.module.scss";
 .homePage {
 	width: 60%;
 	min-height: 100vh;
 	margin-top: 2rem;
 	border: 0.1rem solid rgba(0, 0, 0, 0.2);
+	@include mobile {
+		width: 95%;
+	}
+	@include middleSmall {
+		width: 90%;
+	}
 }
 .header {
 	width: 100%;

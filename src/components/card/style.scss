@@ -1,7 +1,14 @@
+@import "../../responsive.module.scss";
 .quizCard {
 	width: 33%;
 	padding: 0 1rem;
 	margin-bottom: 2rem;
+	@include mobile {
+		width: 100%;
+	}
+	@include middleSmall {
+		width: 49%;
+	}
 }
 .quizCard__wrap {
 	position: relative;
