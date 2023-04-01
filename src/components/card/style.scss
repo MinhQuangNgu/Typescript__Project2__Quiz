@@ -9,6 +9,9 @@
 	@include middleSmall {
 		width: 49%;
 	}
+	@include tablet {
+		width: 49%;
+	}
 }
 .quizCard__wrap {
 	position: relative;

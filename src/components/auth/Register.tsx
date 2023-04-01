@@ -49,9 +49,6 @@ const Register: React.FC = () => {
 	const { setLoading } = useContext(UseContext);
 
 	const handleRegister = async (): Promise<void> => {
-		if (setLoading) {
-			setLoading(true);
-		}
 		try {
 			let msg: User = {
 				name: "",
@@ -83,6 +80,9 @@ const Register: React.FC = () => {
 			setErr(msg);
 			if (check) {
 				return;
+			}
+			if (setLoading) {
+				setLoading(true);
 			}
 			const url = "/v1/auth/register";
 			const data = await postApi(

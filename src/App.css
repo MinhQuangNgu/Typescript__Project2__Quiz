@@ -37,3 +37,8 @@
 	right: 0%;
 	z-index: 500;
 }
+@media (max-width: 739px) {
+	.radio__container {
+		display: none;
+	}
+}
