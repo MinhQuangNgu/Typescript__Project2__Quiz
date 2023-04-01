@@ -1,10 +1,11 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useContext } from "react";
 import "./style.scss";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { postApi } from "../../api/Api";
 import { AxiosError } from "axios";
 import { ErrorLogin } from "../../model";
+import { UseContext } from "../../App";
 
 interface User {
 	name: string;
@@ -45,7 +46,12 @@ const Register: React.FC = () => {
 		// }
 	};
 
+	const { setLoading } = useContext(UseContext);
+
 	const handleRegister = async (): Promise<void> => {
+		if (setLoading) {
+			setLoading(true);
+		}
 		try {
 			let msg: User = {
 				name: "",
@@ -74,7 +80,9 @@ const Register: React.FC = () => {
 					check = true;
 				}
 			}
-			console.log();
+			if (setLoading) {
+				setLoading(false);
+			}
 			setErr(msg);
 			if (check) {
 				return;
@@ -93,6 +101,9 @@ const Register: React.FC = () => {
 				replace: true,
 			});
 		} catch (error) {
+			if (setLoading) {
+				setLoading(false);
+			}
 			const err = error as AxiosError<ErrorLogin>;
 			toast.error(err?.response?.data?.msg, {
 				autoClose: 2000,

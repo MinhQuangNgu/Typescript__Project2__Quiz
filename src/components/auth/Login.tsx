@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useContext, useRef } from "react";
 import "./style.scss";
 import { postApi } from "../../api/Api";
 import { AxiosError } from "axios";
@@ -7,12 +7,15 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../store/store";
 import { isLogin } from "../../store/slice/authSlice";
+import { UseContext } from "../../App";
 
 const Login: React.FC = () => {
 	const navigate = useNavigate();
 	const dispath = useAppDispatch();
 	const passwordRef = useRef<HTMLInputElement>(null);
 	const emailRef = useRef<HTMLInputElement>(null);
+
+	const { setLoading } = useContext(UseContext);
 
 	const handleChangeTypeOfPassword = (): void => {
 		toast.success("Xin lỗi nhưng phải bỏ cái này không nó báo lỗi.", {
@@ -26,6 +29,9 @@ const Login: React.FC = () => {
 	};
 
 	const handleLogin = async (): Promise<void> => {
+		if (setLoading) {
+			setLoading(true);
+		}
 		try {
 			const data = await postApi(
 				"/v1/auth/login",
@@ -45,11 +51,17 @@ const Login: React.FC = () => {
 				token: data?.data?.token,
 				image: data?.data?.image,
 			};
+			if (setLoading) {
+				setLoading(false);
+			}
 			dispath(isLogin(user));
 			navigate("/", {
 				replace: true,
 			});
 		} catch (error: any) {
+			if (setLoading) {
+				setLoading(false);
+			}
 			const err = error as AxiosError<ErrorLogin>;
 			toast.error(err?.response?.data?.msg, {
 				autoClose: 2000,
